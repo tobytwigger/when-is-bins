@@ -36,6 +36,33 @@ npm run build
 
 cd ../
 
+cd python
+
+# Remove .venv if exists
+if [ -d ".venv" ]; then
+  echo "Removing .venv directory..."
+  rm -rf .venv
+fi
+
+# Create a virtual environment
+echo "Creating virtual environment..."
+python3.12 -m venv .venv
+
+# Activate the virtual environment
+echo "Activating virtual environment..."
+source .venv/bin/activate
+
+# Install dependencies
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+# Deactivate the virtual environment
+echo "Deactivating virtual environment..."
+deactivate
+
+# Exit the python directory
+cd ../
+
 # Stop supervisor
 echo "Stopping supervisor..."
 sudo supervisorctl stop all
