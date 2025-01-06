@@ -2,7 +2,7 @@
 
 # Define variables
 RELEASES_DIR="releases"
-REPO_URL="git@github.com:tobytwigger/when-is-bins"
+REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 TARGET_DIR="$RELEASES_DIR/$CURRENT_TIME"
 
