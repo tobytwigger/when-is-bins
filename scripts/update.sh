@@ -22,3 +22,38 @@ else
   echo "Failed to clone repository."
   exit 1
 fi
+
+# Change to the target directory
+cd "$TARGET_DIR" || exit
+
+# Call build-node.sh
+if [ -f "build-node.sh" ]; then
+  echo "Running build-node.sh..."
+  ./build-node.sh
+  if [ $? -eq 0 ]; then
+    echo "build-node.sh executed successfully."
+  else
+    echo "build-node.sh execution failed."
+    exit 1
+  fi
+else
+  echo "build-node.sh not found in $TARGET_DIR."
+  exit 1
+fi
+
+# Call setup-supervisor.sh
+if [ -f "setup-supervisor.sh" ]; then
+  echo "Running setup-supervisor.sh..."
+  ./setup-supervisor.sh
+  if [ $? -eq 0 ]; then
+    echo "setup-supervisor.sh executed successfully."
+  else
+    echo "setup-supervisor.sh execution failed."
+    exit 1
+  fi
+else
+  echo "setup-supervisor.sh not found in $TARGET_DIR."
+  exit 1
+fi
+
+echo "Script completed successfully."
