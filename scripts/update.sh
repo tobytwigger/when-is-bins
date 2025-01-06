@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables
-RELEASES_DIR="./../releases"
+RELEASES_DIR="releases"
 REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 TARGET_DIR="$RELEASES_DIR/$CURRENT_TIME"
