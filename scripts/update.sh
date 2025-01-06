@@ -27,9 +27,9 @@ fi
 cd "$TARGET_DIR" || exit
 
 # Call build-node.sh
-if [ -f "build-node.sh" ]; then
+if [ -f "./scripts/install/build-node.sh" ]; then
   echo "Running build-node.sh..."
-  ./build-node.sh
+  ./scripts/install/build-node.sh
   if [ $? -eq 0 ]; then
     echo "build-node.sh executed successfully."
   else
@@ -42,9 +42,9 @@ else
 fi
 
 # Call setup-supervisor.sh
-if [ -f "setup-supervisor.sh" ]; then
+if [ -f "./scripts/install/setup-supervisor.sh" ]; then
   echo "Running setup-supervisor.sh..."
-  ./setup-supervisor.sh
+  ./scripts/install/setup-supervisor.sh
   if [ $? -eq 0 ]; then
     echo "setup-supervisor.sh executed successfully."
   else
