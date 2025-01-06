@@ -1,0 +1,48 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1736171272313,
+      "tag": "0000_fat_wild_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1736175180890,
+      "tag": "0001_crazy_arachne",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1736175580270,
+      "tag": "0002_watery_lifeguard",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1736176624918,
+      "tag": "0003_last_zzzax",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1736177962511,
+      "tag": "0004_strange_pestilence",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1736178140066,
+      "tag": "0005_yielding_salo",
+      "breakpoints": true
+    }
+  ]
+}

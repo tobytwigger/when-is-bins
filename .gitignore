@@ -1,0 +1,24 @@
+# Nuxt dev/build outputs
+js/.output
+js/.data
+js/.nuxt
+js/.nitro
+js/.cache
+js/dist
+
+# Node dependencies
+js/node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
