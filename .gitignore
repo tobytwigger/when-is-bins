@@ -23,3 +23,5 @@ logs
 .env.*
 !.env.example
 database.sqlite
+
+python/.venv

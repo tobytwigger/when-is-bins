@@ -5,6 +5,7 @@ RELEASES_DIR="releases"
 REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 TARGET_DIR="$RELEASES_DIR/$CURRENT_TIME"
+CURRENT_DIR="$(pwd)/when-is-bins"
 
 # Create the 'releases' folder if it doesn't exist
 if [ ! -d "$RELEASES_DIR" ]; then
@@ -27,33 +28,38 @@ fi
 cd "$TARGET_DIR" || exit
 
 # Call build-node.sh
-if [ -f "./scripts/install/build-node.sh" ]; then
-  echo "Running build-node.sh..."
-  ./scripts/install/build-node.sh
-  if [ $? -eq 0 ]; then
-    echo "build-node.sh executed successfully."
-  else
-    echo "build-node.sh execution failed."
-    exit 1
-  fi
-else
-  echo "build-node.sh not found in $TARGET_DIR."
-  exit 1
-fi
+cd js
 
-# Call setup-supervisor.sh
-if [ -f "./scripts/install/setup-supervisor.sh" ]; then
-  echo "Running setup-supervisor.sh..."
-  ./scripts/install/setup-supervisor.sh
-  if [ $? -eq 0 ]; then
-    echo "setup-supervisor.sh executed successfully."
-  else
-    echo "setup-supervisor.sh execution failed."
-    exit 1
-  fi
-else
-  echo "setup-supervisor.sh not found in $TARGET_DIR."
-  exit 1
-fi
+npm install
+
+npm run build
+
+cd ../
+
+# Stop supervisor
+echo "Stopping supervisor..."
+sudo supervisorctl stop all
+
+# Move files to the 'current' directory
+mkdir -p "$CURRENT_DIR/when-is-bins-new"
+cp -r "$TARGET_DIR/js/.output" "$CURRENT_DIR/when-is-bins-new/js"
+cp -r "$TARGET_DIR/python" "$CURRENT_DIR/python"
+
+mv "$CURRENT_DIR/when-is-bins" "$CURRENT_DIR/when-is-bins-old"
+mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
+
+# Remove the timestamped directory
+echo "Removing $TARGET_DIR..."
+sudo rm -rf "$TARGET_DIR"
+
+# Set up new supervisor scripts
+echo "Setting up supervisor..."
+sudo cp "$TARGET_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
+sudo supervisorctl reread
+sudo supervisorctl update
+
+# Restart supervisor
+echo "Restarting supervisor..."
+sudo supervisorctl start all
 
 echo "Script completed successfully."
