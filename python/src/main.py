@@ -1,4 +1,4 @@
-#!/home/toby/development/when-is-bins/.venv/bin/python
+#!/home/toby/when-is-bins/python/.venv/bin/python
 
 import RPi.GPIO as GPIO
 import time

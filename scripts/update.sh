@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # Define variables
-RELEASES_DIR="releases"
+RELEASES_DIR="$(pwd)/releases"
 REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
+CURRENT_TIME="2025-01-06_22-45-07"
 TARGET_DIR="$RELEASES_DIR/$CURRENT_TIME"
-CURRENT_DIR="$(pwd)/when-is-bins"
+CURRENT_DIR="$(pwd)"
+
+
 
 # Create the 'releases' folder if it doesn't exist
 if [ ! -d "$RELEASES_DIR" ]; then
@@ -67,12 +70,23 @@ cd ../
 echo "Stopping supervisor..."
 sudo supervisorctl stop all
 
+echo "Copying supervisor config"
+sudo cp "$TARGET_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
+
 # Move files to the 'current' directory
+echo "Moving files to $CURRENT_DIR..."
 mkdir -p "$CURRENT_DIR/when-is-bins-new"
 cp -r "$TARGET_DIR/js/.output" "$CURRENT_DIR/when-is-bins-new/js"
-cp -r "$TARGET_DIR/python" "$CURRENT_DIR/python"
+cp -r "$TARGET_DIR/python" "$CURRENT_DIR/when-is-bins-new/python"
 
-mv "$CURRENT_DIR/when-is-bins" "$CURRENT_DIR/when-is-bins-old"
+# move when-is-bins if exists
+if [ -d "$CURRENT_DIR/when-is-bins" ]; then
+  echo "Moving $CURRENT_DIR/when-is-bins to $CURRENT_DIR/when-is-bins-old..."
+  mv "$CURRENT_DIR/when-is-bins" "$CURRENT_DIR/when-is-bins-old"
+fi
+
+# Rename the 'new' directory to 'current'
+echo "Renaming $CURRENT_DIR/when-is-bins-new to $CURRENT_DIR/when-is-bins..."
 mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
 
 # Remove the timestamped directory
@@ -81,7 +95,6 @@ sudo rm -rf "$TARGET_DIR"
 
 # Set up new supervisor scripts
 echo "Setting up supervisor..."
-sudo cp "$TARGET_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
 sudo supervisorctl reread
 sudo supervisorctl update
 
