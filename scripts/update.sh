@@ -93,6 +93,11 @@ mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
 echo "Removing $TARGET_DIR..."
 sudo rm -rf "$TARGET_DIR"
 
+# Make the scripts executable
+echo "Making scripts executable..."
+sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/main.py"
+sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/api.py"
+
 # Set up new supervisor scripts
 echo "Setting up supervisor..."
 sudo supervisorctl reread
