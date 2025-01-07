@@ -78,6 +78,7 @@ echo "Moving files to $CURRENT_DIR..."
 mkdir -p "$CURRENT_DIR/when-is-bins-new"
 cp -r "$TARGET_DIR/js/.output" "$CURRENT_DIR/when-is-bins-new/js"
 cp -r "$TARGET_DIR/python" "$CURRENT_DIR/when-is-bins-new/python"
+cp "$TARGET_DIR/js.sh" "$CURRENT_DIR/when-is-bins-new/js.sh"
 
 # move when-is-bins if exists
 if [ -d "$CURRENT_DIR/when-is-bins" ]; then
@@ -97,6 +98,7 @@ sudo rm -rf "$TARGET_DIR"
 echo "Making scripts executable..."
 sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/main.py"
 sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/api.py"
+sudo chmod +x "$CURRENT_DIR/when-is-bins/js.sh"
 
 # Set up new supervisor scripts
 echo "Setting up supervisor..."
