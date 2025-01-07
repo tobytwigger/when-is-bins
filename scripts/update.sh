@@ -99,7 +99,7 @@ mv "$ROOT_DIR/when-is-bins-new" "$ROOT_DIR/when-is-bins"
 
 # Remove the timestamped directory
 echo "Removing $BUILD_DIR..."
-sudo rm -rf "$BUILD_DIR"
+#sudo rm -rf "$BUILD_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
