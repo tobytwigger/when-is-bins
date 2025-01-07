@@ -6,7 +6,7 @@ import * as schema from '../database/schema'
 export const tables = schema
 
 export function useDrizzle() {
-    return drizzle('file:./../../../../database.sqlite', { schema })
+    return drizzle('file:/home/toby/database.sqlite', { schema })
 }
 
 export type Home = typeof schema.homes.$inferSelect

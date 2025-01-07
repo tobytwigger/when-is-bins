@@ -4,7 +4,6 @@
 RELEASES_DIR="$(pwd)/releases"
 REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
-CURRENT_TIME="2025-01-06_22-45-07"
 BUILD_DIR="$RELEASES_DIR/$CURRENT_TIME"
 ROOT_DIR="$(pwd)"
 
@@ -91,11 +90,12 @@ rm -rf "$ROOT_DIR/when-is-bins-new/.github"
 #cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
 #cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
 
-# move when-is-bins if exists
+# delete the old directory
 if [ -d "$ROOT_DIR/when-is-bins" ]; then
-  echo "Moving $ROOT_DIR/when-is-bins to $ROOT_DIR/when-is-bins-old..."
-  mv "$ROOT_DIR/when-is-bins" "$ROOT_DIR/when-is-bins-old"
+  echo "Removing $ROOT_DIR/when-is-bins..."
+  sudo rm -rf "$ROOT_DIR/when-is-bins"
 fi
+
 
 # Rename the 'new' directory to 'current'
 echo "Renaming $ROOT_DIR/when-is-bins-new to $ROOT_DIR/when-is-bins..."
@@ -103,7 +103,7 @@ mv "$ROOT_DIR/when-is-bins-new" "$ROOT_DIR/when-is-bins"
 
 # Remove the timestamped directory
 echo "Removing $BUILD_DIR..."
-#sudo rm -rf "$BUILD_DIR"
+sudo rm -rf "$BUILD_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
