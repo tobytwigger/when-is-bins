@@ -122,11 +122,6 @@ sudo supervisorctl update
    touch "$ROOT_DIR/database.sqlite"
  fi
 
-# Migrate the database by running scrips/migrate.sh
-echo "Migrating the database..."
-cd "$ROOT_DIR/when-is-bins" || exit
-./scripts/migrate.sh
-
 # Restart supervisor
 echo "Restarting supervisor..."
 sudo supervisorctl start all
