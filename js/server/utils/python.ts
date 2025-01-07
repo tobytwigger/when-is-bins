@@ -12,9 +12,9 @@ export async function getBinOptions(homeId: string): Promise<{ options: string[]
 async function runPython(subcommand: string, args: string[]) {
     let messages = await PythonShell.run('api.py', {
         mode: 'text',
-        pythonPath: path.resolve(path.dirname('')) + '/home/toby/when-is-bins/python/.venv/bin/python',
+        pythonPath: '/home/toby/when-is-bins/python/.venv/bin/python',
         pythonOptions: ['-u'],
-        scriptPath: path.resolve(path.dirname('')) + '/home/toby/when-is-bins/python/src',
+        scriptPath: '/home/toby/when-is-bins/python/src',
         args: [subcommand, ...args]
     });
 
