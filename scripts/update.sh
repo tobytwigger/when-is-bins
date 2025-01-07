@@ -5,8 +5,8 @@ RELEASES_DIR="$(pwd)/releases"
 REPO_URL="https://github.com/tobytwigger/when-is-bins.git"
 CURRENT_TIME=$(date +"%Y-%m-%d_%H-%M-%S")
 CURRENT_TIME="2025-01-06_22-45-07"
-TARGET_DIR="$RELEASES_DIR/$CURRENT_TIME"
-CURRENT_DIR="$(pwd)"
+BUILD_DIR="$RELEASES_DIR/$CURRENT_TIME"
+ROOT_DIR="$(pwd)"
 
 
 
@@ -17,18 +17,18 @@ if [ ! -d "$RELEASES_DIR" ]; then
 fi
 
 # Clone the repository into the timestamped directory
-echo "Cloning repository into $TARGET_DIR..."
-git clone "$REPO_URL" "$TARGET_DIR"
+echo "Cloning repository into $BUILD_DIR..."
+git clone "$REPO_URL" "$BUILD_DIR"
 
 if [ $? -eq 0 ]; then
-  echo "Repository cloned successfully into $TARGET_DIR."
+  echo "Repository cloned successfully into $BUILD_DIR."
 else
   echo "Failed to clone repository."
   exit 1
 fi
 
 # Change to the target directory
-cd "$TARGET_DIR" || exit
+cd "$BUILD_DIR" || exit
 
 # Call build-node.sh
 cd js
@@ -71,48 +71,57 @@ echo "Stopping supervisor..."
 sudo supervisorctl stop all
 
 echo "Copying supervisor config"
-sudo cp "$TARGET_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
+sudo cp "$BUILD_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
 
 # Move files to the 'current' directory
-echo "Moving files to $CURRENT_DIR..."
-mkdir -p "$CURRENT_DIR/when-is-bins-new"
-cp -r "$TARGET_DIR/js/.output" "$CURRENT_DIR/when-is-bins-new/js"
-cp -r "$TARGET_DIR/python" "$CURRENT_DIR/when-is-bins-new/python"
-cp -r "$TARGET_DIR/scripts" "$CURRENT_DIR/when-is-bins-new/scripts"
-cp "$TARGET_DIR/js.sh" "$CURRENT_DIR/when-is-bins-new/js.sh"
+echo "Moving files to $ROOT_DIR..."
+mkdir -p "$ROOT_DIR/when-is-bins-new"
+cp -r "$BUILD_DIR/js/.output" "$ROOT_DIR/when-is-bins-new/js"
+cp -r "$BUILD_DIR/js/package.json" "$ROOT_DIR/when-is-bins-new/package.json"
+cp -r "$BUILD_DIR/js/package-lock.json" "$ROOT_DIR/when-is-bins-new/package-lock.json"
+cp -r "$BUILD_DIR/python" "$ROOT_DIR/when-is-bins-new/python"
+cp -r "$BUILD_DIR/scripts/update.sh" "$ROOT_DIR/when-is-bins-new/scripts/update.sh"
+cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
+cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
 
 # move when-is-bins if exists
-if [ -d "$CURRENT_DIR/when-is-bins" ]; then
-  echo "Moving $CURRENT_DIR/when-is-bins to $CURRENT_DIR/when-is-bins-old..."
-  mv "$CURRENT_DIR/when-is-bins" "$CURRENT_DIR/when-is-bins-old"
+if [ -d "$ROOT_DIR/when-is-bins" ]; then
+  echo "Moving $ROOT_DIR/when-is-bins to $ROOT_DIR/when-is-bins-old..."
+  mv "$ROOT_DIR/when-is-bins" "$ROOT_DIR/when-is-bins-old"
 fi
 
 # Rename the 'new' directory to 'current'
-echo "Renaming $CURRENT_DIR/when-is-bins-new to $CURRENT_DIR/when-is-bins..."
-mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
+echo "Renaming $ROOT_DIR/when-is-bins-new to $ROOT_DIR/when-is-bins..."
+mv "$ROOT_DIR/when-is-bins-new" "$ROOT_DIR/when-is-bins"
 
 # Remove the timestamped directory
-echo "Removing $TARGET_DIR..."
-sudo rm -rf "$TARGET_DIR"
+echo "Removing $BUILD_DIR..."
+sudo rm -rf "$BUILD_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
-sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/main.py"
-sudo chmod +x "$CURRENT_DIR/when-is-bins/python/src/api.py"
-sudo chmod +x "$CURRENT_DIR/when-is-bins/js.sh"
+sudo chmod +x "$ROOT_DIR/when-is-bins/python/src/main.py"
+sudo chmod +x "$ROOT_DIR/when-is-bins/python/src/api.py"
+sudo chmod +x "$ROOT_DIR/when-is-bins/scripts/hostjs.sh"
 
 # Set up new supervisor scripts
 echo "Setting up supervisor..."
 sudo supervisorctl reread
 sudo supervisorctl update
 
-# Restart supervisor
-echo "Restarting supervisor..."
-sudo supervisorctl start all
+## Check the database exists
+ if [ ! -f "$ROOT_DIR/database.sqlite" ]; then
+   echo "Checking the database exists..."
+   touch "$ROOT_DIR/database.sqlite"
+ fi
 
 # Migrate the database by running scrips/migrate.sh
 echo "Migrating the database..."
-cd "$CURRENT_DIR/when-is-bins" || exit
+cd "$ROOT_DIR/when-is-bins" || exit
 ./scripts/migrate.sh
+
+# Restart supervisor
+echo "Restarting supervisor..."
+sudo supervisorctl start all
 
 echo "Script completed successfully."
