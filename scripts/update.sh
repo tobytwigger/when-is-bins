@@ -75,17 +75,21 @@ sudo cp "$BUILD_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.co
 
 # Move files to the 'current' directory
 echo "Moving files to $ROOT_DIR..."
-mkdir -p "$ROOT_DIR/when-is-bins-new"
-mkdir -p "$ROOT_DIR/when-is-bins-new/scripts"
-cp -r "$BUILD_DIR/js/.output" "$ROOT_DIR/when-is-bins-new/js"
-mkdir -p "$ROOT_DIR/when-is-bins-new/js/.drizzle"
-cp -r "$BUILD_DIR/js/server/database/migrations" "$ROOT_DIR/when-is-bins-new/js/.drizzle/migrations"
-cp -r "$BUILD_DIR/js/package.json" "$ROOT_DIR/when-is-bins-new/package.json"
-cp -r "$BUILD_DIR/js/package-lock.json" "$ROOT_DIR/when-is-bins-new/package-lock.json"
-cp -r "$BUILD_DIR/python" "$ROOT_DIR/when-is-bins-new/python"
-cp -r "$BUILD_DIR/scripts/update.sh" "$ROOT_DIR/when-is-bins-new/scripts/update.sh"
-cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
-cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
+cp -r "$BUILD_DIR" "$ROOT_DIR/when-is-bins-new"
+rm -rf "$ROOT_DIR/when-is-bins-new/.git"
+rm -rf "$ROOT_DIR/when-is-bins-new/.gitignore"
+rm -rf "$ROOT_DIR/when-is-bins-new/.github"
+#mkdir -p "$ROOT_DIR/when-is-bins-new"
+#mkdir -p "$ROOT_DIR/when-is-bins-new/scripts"
+#cp -r "$BUILD_DIR/js/.output" "$ROOT_DIR/when-is-bins-new/js"
+#mkdir -p "$ROOT_DIR/when-is-bins-new/js/.drizzle"
+#cp -r "$BUILD_DIR/js/server/database/migrations" "$ROOT_DIR/when-is-bins-new/js/.drizzle/migrations"
+#cp -r "$BUILD_DIR/js/package.json" "$ROOT_DIR/when-is-bins-new/package.json"
+#cp -r "$BUILD_DIR/js/package-lock.json" "$ROOT_DIR/when-is-bins-new/package-lock.json"
+#cp -r "$BUILD_DIR/python" "$ROOT_DIR/when-is-bins-new/python"
+#cp -r "$BUILD_DIR/scripts/update.sh" "$ROOT_DIR/when-is-bins-new/scripts/update.sh"
+#cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
+#cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
 
 # move when-is-bins if exists
 if [ -d "$ROOT_DIR/when-is-bins" ]; then
