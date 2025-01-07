@@ -76,6 +76,7 @@ sudo cp "$BUILD_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.co
 # Move files to the 'current' directory
 echo "Moving files to $ROOT_DIR..."
 mkdir -p "$ROOT_DIR/when-is-bins-new"
+mkdir -p "$ROOT_DIR/when-is-bins-new/scripts"
 cp -r "$BUILD_DIR/js/.output" "$ROOT_DIR/when-is-bins-new/js"
 cp -r "$BUILD_DIR/js/package.json" "$ROOT_DIR/when-is-bins-new/package.json"
 cp -r "$BUILD_DIR/js/package-lock.json" "$ROOT_DIR/when-is-bins-new/package-lock.json"
@@ -100,9 +101,9 @@ sudo rm -rf "$BUILD_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
-sudo chmod +x "$ROOT_DIR/when-is-bins/python/src/main.py"
-sudo chmod +x "$ROOT_DIR/when-is-bins/python/src/api.py"
-sudo chmod +x "$ROOT_DIR/when-is-bins/scripts/hostjs.sh"
+sudo chmod a+x "$ROOT_DIR/when-is-bins/python/src/main.py"
+sudo chmod a+x "$ROOT_DIR/when-is-bins/python/src/api.py"
+sudo chmod a+x "$ROOT_DIR/when-is-bins/scripts/hostjs.sh"
 
 # Set up new supervisor scripts
 echo "Setting up supervisor..."

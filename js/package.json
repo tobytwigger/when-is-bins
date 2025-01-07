@@ -15,7 +15,6 @@
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.20.0",
     "@types/better-sqlite3": "^7.6.12",
-    "drizzle-kit": "^0.30.1",
     "nuxt": "^3.15.0",
     "tsx": "^4.19.2",
     "vue": "latest",
@@ -25,6 +24,7 @@
     "@libsql/client": "^0.14.0",
     "better-sqlite3": "^11.7.2",
     "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.30.1",
     "drizzle-orm": "^0.38.3",
     "python-shell": "^5.0.0"
   }
