@@ -72,6 +72,8 @@ sudo supervisorctl stop all
 echo "Copying supervisor config"
 sudo cp "$BUILD_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
 
+shopt -s dotglob
+
 # Move files to the 'current' directory
 echo "Moving files to $ROOT_DIR..."
 cp -r "$BUILD_DIR" "$ROOT_DIR/when-is-bins-new"
@@ -89,6 +91,8 @@ rm -rf "$ROOT_DIR/when-is-bins-new/.github"
 #cp -r "$BUILD_DIR/scripts/update.sh" "$ROOT_DIR/when-is-bins-new/scripts/update.sh"
 #cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
 #cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
+
+shopt -u dotglob
 
 # delete the old directory
 if [ -d "$ROOT_DIR/when-is-bins" ]; then
