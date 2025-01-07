@@ -6,8 +6,6 @@ import * as schema from '../database/schema'
 export const tables = schema
 
 export function useDrizzle() {
-    
-
     const databasePath = path.resolve(__dirname, './../../../../database.sqlite');
     console.log('Absolute Path to the Database:', databasePath);
     return drizzle('file:./../../../../database.sqlite', { schema })

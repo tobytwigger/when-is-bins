@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrateprod": "NODE_ENV=production node .drizzle/migrate.ts"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
