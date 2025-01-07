@@ -78,6 +78,7 @@ echo "Moving files to $CURRENT_DIR..."
 mkdir -p "$CURRENT_DIR/when-is-bins-new"
 cp -r "$TARGET_DIR/js/.output" "$CURRENT_DIR/when-is-bins-new/js"
 cp -r "$TARGET_DIR/python" "$CURRENT_DIR/when-is-bins-new/python"
+cp -r "$TARGET_DIR/scripts" "$CURRENT_DIR/when-is-bins-new/scripts"
 cp "$TARGET_DIR/js.sh" "$CURRENT_DIR/when-is-bins-new/js.sh"
 
 # move when-is-bins if exists
@@ -92,7 +93,7 @@ mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
 
 # Remove the timestamped directory
 echo "Removing $TARGET_DIR..."
-#sudo rm -rf "$TARGET_DIR"
+sudo rm -rf "$TARGET_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
