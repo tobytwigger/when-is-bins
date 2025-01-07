@@ -33,7 +33,7 @@ cd "$TARGET_DIR" || exit
 # Call build-node.sh
 cd js
 
-npm install
+npm update
 
 npm run build
 
@@ -92,7 +92,7 @@ mv "$CURRENT_DIR/when-is-bins-new" "$CURRENT_DIR/when-is-bins"
 
 # Remove the timestamped directory
 echo "Removing $TARGET_DIR..."
-sudo rm -rf "$TARGET_DIR"
+#sudo rm -rf "$TARGET_DIR"
 
 # Make the scripts executable
 echo "Making scripts executable..."
@@ -108,5 +108,10 @@ sudo supervisorctl update
 # Restart supervisor
 echo "Restarting supervisor..."
 sudo supervisorctl start all
+
+# Migrate the database by running scrips/migrate.sh
+echo "Migrating the database..."
+cd "$CURRENT_DIR/when-is-bins" || exit
+./scripts/migrate.sh
 
 echo "Script completed successfully."
