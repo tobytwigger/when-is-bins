@@ -10,11 +10,12 @@ export async function getBinOptions(homeId: string): Promise<{ options: string[]
 }
 
 async function runPython(subcommand: string, args: string[]) {
+    let root = process.env.NODE_ENV === 'development' ? './../python/' : '/home/toby/when-is-bins/python/';
     let messages = await PythonShell.run('api.py', {
         mode: 'text',
-        pythonPath: '/home/toby/when-is-bins/python/.venv/bin/python',
+        pythonPath: root + '.venv/bin/python',
         pythonOptions: ['-u'],
-        scriptPath: '/home/toby/when-is-bins/python/src',
+        scriptPath: root + 'src',
         args: [subcommand, ...args]
     });
 

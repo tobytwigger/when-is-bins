@@ -72,7 +72,7 @@ class ConfigurationChecker:
 
 
 class ConfigurationCheckerResult:
-    def __init__(self, _is_missing_active_home, _no_bins_set_up, _home_connection_failed, _not_connected_to_internet):
+    def __init__(self, _is_missing_active_home, _no_bins_set_up, _not_connected_to_internet):
         self.is_missing_active_home = _is_missing_active_home
         self.no_bins_set_up = _no_bins_set_up
         self.not_connected_to_internet = _not_connected_to_internet

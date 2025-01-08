@@ -84,6 +84,39 @@ const del = () => {
         });
 }
 
+const isMoving = ref(false);
+const moveForwards = () => {
+    move('forwards');
+}
+
+const moveBack = () => {
+    move('backwards');
+}
+
+const move = (direction) => {
+    isMoving.value = true;
+    $fetch(`/api/home/${props.homeId}/bins/${props.position}/move`, {
+        method: 'POST',
+        body: {
+            direction
+        }
+    })
+        .then(() => {
+            toast.add({
+                title: 'Bin moved',
+                description: 'The bin has been moved',
+            })
+            emit('updated');
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+        .finally(() => {
+            isMoving.value = false;
+            emit('updated')
+        });
+}
+
 </script>
 
 <template>
@@ -102,23 +135,34 @@ const del = () => {
                 <USelectMenu
                     v-model="state.option"
                     :options="props.options"
-                    class="w-full lg:w-48"
+                    class="w-full"
                     placeholder="Select a bin from the council"
                     searchable
                     searchable-placeholder="Search bins..."
                 />
             </UFormGroup>
 
-            <div class="flex flex-col space-y-2 w-full justify-center">
+            <div class="flex flex-row m-2 justify-between w-full">
+                <div>
+                     <UButton icon="i-heroicons-chevron-left" color="gray" :loading="isMoving" @click="moveBack" v-if="props.position !== 1"
+                              class="w-min">
+                    </UButton>
+                </div>
+                <div class="flex flex-col space-y-2 w-full text-center m-auto justify-center items-center">
                 <UButton icon="i-material-symbols-save-outline" class="w-min"
                          v-if="isDirty" :loading="isSubmitting" type="submit"
-                        @click="updateBin">
+                         @click="updateBin">
                     Submit
                 </UButton>
-                <UButton icon="i-heroicons-trash" :loading="isDeleting" @click="del" color="red" class="w-min" v-if="props.bin !== null">
-                    Clear
-                </UButton>
             </div>
+
+                <div>
+                 <UButton icon="i-heroicons-chevron-right" color="gray" :loading="isMoving" @click="moveForwards" v-if="props.position !== 4"
+                          class="w-min">
+                </UButton>
+                </div>
+            </div>
+
 
         </UForm>
     </span>

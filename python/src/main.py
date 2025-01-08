@@ -46,6 +46,7 @@ def run():
 def set_up_gpio():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
+    GPIO.cleanup()
 
 
 class AppRunner:

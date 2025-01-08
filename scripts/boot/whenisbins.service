@@ -1,11 +1,13 @@
 [Unit]
 Description=Set LCD to show booting message
-After=sysinit.target
+Before=basic.target
+After=local-fs.target sysinit.target
+DefaultDependencies=no
 
 [Service]
 User=toby
-Type=forking
-ExecStart=/home/toby/whenisbins/scripts/boot/onboot.sh
+Type=oneshot
+ExecStart=/home/toby/when-is-bins/scripts/boot/onboot.sh
 TimeoutSec=10
 
 [Install]

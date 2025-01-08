@@ -92,7 +92,6 @@ rm -rf "$ROOT_DIR/when-is-bins-new/.github"
 #cp -r "$BUILD_DIR/js/package-lock.json" "$ROOT_DIR/when-is-bins-new/package-lock.json"
 #cp -r "$BUILD_DIR/python" "$ROOT_DIR/when-is-bins-new/python"
 #cp -r "$BUILD_DIR/scripts/update.sh" "$ROOT_DIR/when-is-bins-new/scripts/update.sh"
-#cp -r "$BUILD_DIR/scripts/migrate.sh" "$ROOT_DIR/when-is-bins-new/scripts/migrate.sh"
 #cp -r "$BUILD_DIR/scripts/hostjs.sh" "$ROOT_DIR/when-is-bins-new/scripts/hostjs.sh"
 
 shopt -u dotglob
@@ -129,6 +128,12 @@ sudo supervisorctl update
    echo "Checking the database exists..."
    touch "$ROOT_DIR/database.sqlite"
  fi
+
+# Reloading boot script directory
+echo "Reloading boot scripts..."
+sudo systemctl daemon-reload
+sudo systemctl start whenisbins
+sudo systemctl enable whenisbins
 
 # Restart supervisor
 echo "Restarting supervisor..."

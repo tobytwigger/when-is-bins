@@ -1,6 +1,6 @@
 <template>
     <LayoutsHome :home-id="homeId">
-        <div class="grid grid-cols-4 divide-x" v-if="!isLoadingBins">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" v-if="!isLoadingBins">
             <BinSetup :home-id="homeId" :position="1" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 1) || null" @updated="loadBins">
 
             </BinSetup>
