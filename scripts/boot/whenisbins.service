@@ -1,0 +1,12 @@
+[Unit]
+Description=Set LCD to show booting message
+After=sysinit.target
+
+[Service]
+User=toby
+Type=forking
+ExecStart=/home/toby/whenisbins/scripts/boot/onboot.sh
+TimeoutSec=10
+
+[Install]
+WantedBy=multi-user.target

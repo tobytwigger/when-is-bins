@@ -42,7 +42,7 @@ def get_bin_options(home_id):
     # Get the home record
     home = Home.get_by_id(home_id)
 
-    bins = BinDayRepository(home)
+    bins = BinDayRepository(home, home.bins)
     bin_options = bins.get_bin_options()
 
     output({
@@ -54,7 +54,7 @@ def test_home(home_id):
     home = Home.get_by_id(home_id)
 
     try:
-        bins = BinDayRepository(home)
+        bins = BinDayRepository(home, home.bins)
         bins.get_bin_data()
     except Exception as e:
         output({'valid': False, 'error': str(e)})

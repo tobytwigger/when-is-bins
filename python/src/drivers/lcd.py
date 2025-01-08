@@ -17,8 +17,6 @@ class Lcd:
     TEXT_STYLE_CENTER = 'center'
     TEXT_STYLE_RIGHT = 'right'
 
-    _sleeping = False
-
     def __init__(self):
         self._lcd_init_pins()
         self._lcd = CharLCD(pin_rs=Lcd.LCD_RS_PIN, pin_e=Lcd.LCD_E_PIN, pins_data=[Lcd.LCD_D4_PIN, Lcd.LCD_D5_PIN, Lcd.LCD_D6_PIN, Lcd.LCD_D7_PIN],
@@ -26,6 +24,9 @@ class Lcd:
         self._lcd.cursor_mode = 'hide'
         self._lcd.clear()
         self._lcd.cursor_pos = (0, 0)
+        self._current_line_1 = None
+        self._current_line_2 = None
+        self._sleeping = False
 
     def _lcd_init_pins(self):
         GPIO.setup(self.LCD_E_PIN, GPIO.OUT)
@@ -35,7 +36,6 @@ class Lcd:
         GPIO.setup(self.LCD_D6_PIN, GPIO.OUT)
         GPIO.setup(self.LCD_D7_PIN, GPIO.OUT)
         GPIO.setup(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.OUT)  # Backlight enable
-
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.HIGH)
 
     def display(self, line1, line2, style):
@@ -53,6 +53,13 @@ class Lcd:
             line1 = line1.rjust(self.LCD_WIDTH, ' ')
             line2 = line2.rjust(self.LCD_WIDTH, ' ')
 
+        if self._current_line_1 == line1 and self._current_line_2 == line2:
+            return
+
+        self._current_line_1 = line1
+        self._current_line_2 = line2
+        print(line1)
+        print('Updating LCD')
         self._lcd.clear()
         self._lcd.write_string(line1)
         self._lcd.cursor_pos = (1, 0)
@@ -62,6 +69,8 @@ class Lcd:
         if self._sleeping:
             return
         self._lcd.clear()
+        self._current_line_1 = None
+        self._current_line_2 = None
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.LOW)
         # self._lcd.backlight_enabled = False
         self._sleeping = True
@@ -75,17 +84,3 @@ class Lcd:
 
     def cleanup(self):
         self._lcd.clear()
-
-    def display_bins(self, home: Home, bins):
-
-        if bins is None:
-            self.display(
-                'No Bins', 'Found',
-                self.TEXT_STYLE_CENTER
-            )
-        else:
-            self.display(
-                bins.date.strftime('%a, %d %b %G'),
-                '',
-                self.TEXT_STYLE_CENTER
-            )

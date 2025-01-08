@@ -24,11 +24,8 @@ class BinDayInformation:
 class BinDayInformationCollection:
     bin_days: list[BinDayInformation]
 
-    _visible_date: datetime.date or None
-
     def __init__(self, bin_days: list[BinDayInformation]):
         self.bin_days = bin_days
-        self._visible_date = self.first_date()
 
     def first_date(self) -> datetime.date or None:
         if len(self.bin_days) == 0:
@@ -40,34 +37,25 @@ class BinDayInformationCollection:
             return None
         return max([b.date for b in self.bin_days])
 
-    def next_date(self):
-        """
-        Move to the next date
-        """
-        next_date = False
+    def next_date_after(self, after_date):
+        if after_date is None:
+            return self.first_date()
+
         for b in self.bin_days:
-            if b.date > self._visible_date:
-                self._visible_date = b.date
-                next_date = True
-                break
+            if b.date > after_date:
+                return b.date
 
-        if next_date is False:
-            self._visible_date = self.first_date()
+        return self.first_date()
 
-    def previous_date(self):
-        """
-        Move to the previous date
-        :return: bool if there is a previous date
-        """
-        previous_date = False
+    def date_before(self, before_date):
+        if before_date is None:
+            return self.first_date()
+
         for b in self.bin_days:
-            if b.date < self._visible_date:
-                self._visible_date = b.date
-                previous_date = True
-                break
+            if b.date < before_date:
+                return b.date
 
-        if previous_date is False:
-            self._visible_date = self.last_date()
+        return self.last_date()
 
     def get_for_date(self, date) -> BinDayInformation or None:
         for b in self.bin_days:
@@ -76,13 +64,11 @@ class BinDayInformationCollection:
 
         return None
 
-    def get_visible_date(self) -> BinDayInformation:
-        return self.get_for_date(self._visible_date)
-
 class BinDayRepository:
 
-    def __init__(self, home: Home):
+    def __init__(self, home: Home, bin_config: list[Bin]):
         self._home = home
+        self._bin_config = bin_config
         self._setup_bin_app()
 
     def _setup_bin_app(self):
@@ -106,13 +92,11 @@ class BinDayRepository:
         remote_bin_data = self._bin_collection_api.run()
 
         json_bin_data = json.loads(remote_bin_data)
-
         bins_grouped_by_date = {}
 
         for b in json_bin_data["bins"]:
             new_bin = self._create_bin_information(b["type"])
-
-            if(new_bin):
+            if new_bin:
                 day = bins_grouped_by_date.setdefault(b["collectionDate"], BinDayInformation(
                     bins=[],
                     date=datetime.datetime.strptime(b["collectionDate"], "%d/%m/%Y").date()
@@ -124,7 +108,7 @@ class BinDayRepository:
         return collection
 
     def _create_bin_information(self, bin_name: str) -> BinInformation:
-        bins = self._home.bins
+        bins = self._bin_config
 
         for b in bins:
             if b.council_name == bin_name:

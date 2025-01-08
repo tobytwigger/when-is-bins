@@ -72,6 +72,9 @@ sudo supervisorctl stop all
 echo "Copying supervisor config"
 sudo cp "$BUILD_DIR/scripts/supervisor/bins.conf" /etc/supervisor/conf.d/bins.conf
 
+echo "Copying boot scripts"
+sudo cp "$BUILD_DIR/scripts/boot/whenisbins.service" /etc/systemd/system/whenisbins.service
+
 shopt -s dotglob
 
 # Move files to the 'current' directory
@@ -114,6 +117,7 @@ echo "Making scripts executable..."
 sudo chmod a+x "$ROOT_DIR/when-is-bins/python/src/main.py"
 sudo chmod a+x "$ROOT_DIR/when-is-bins/python/src/api.py"
 sudo chmod a+x "$ROOT_DIR/when-is-bins/scripts/hostjs.sh"
+sudo chmod a+x "$ROOT_DIR/when-is-bins/scripts/boot/onboot.sh"
 
 # Set up new supervisor scripts
 echo "Setting up supervisor..."

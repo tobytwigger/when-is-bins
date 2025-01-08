@@ -27,27 +27,18 @@ class Lights:
         GPIO.output(self.POSITION_TWO_LED_PIN, GPIO.HIGH if self.POSITION_TWO_LED_PIN in pins else GPIO.LOW)
         GPIO.output(self.POSITION_ONE_LED_PIN, GPIO.HIGH if self.POSITION_ONE_LED_PIN in pins else GPIO.LOW)
 
-    def set_lights(self, black, green, red, blue):
-        """
-        Set the lights
-        :param bool or null black:
-        :param green:
-        :param red:
-        :param blue:
-        :return:
-        """
-
+    def set_lights(self, one, two, three, four):
         if(self._sleeping):
             return
 
-        if(black is not None):
-            GPIO.output(self.POSITION_FOUR_LED_PIN, GPIO.HIGH if black else GPIO.LOW)
-        if(green is not None):
-            GPIO.output(self.POSITION_THREE_LED_PIN, GPIO.HIGH if green else GPIO.LOW)
-        if(red is not None):
-            GPIO.output(self.POSITION_TWO_LED_PIN, GPIO.HIGH if red else GPIO.LOW)
-        if(blue is not None):
-            GPIO.output(self.POSITION_ONE_LED_PIN, GPIO.HIGH if blue else GPIO.LOW)
+        if(one is not None):
+            GPIO.output(self.POSITION_ONE_LED_PIN, GPIO.HIGH if one else GPIO.LOW)
+        if(two is not None):
+            GPIO.output(self.POSITION_TWO_LED_PIN, GPIO.HIGH if two else GPIO.LOW)
+        if(three is not None):
+            GPIO.output(self.POSITION_THREE_LED_PIN, GPIO.HIGH if three else GPIO.LOW)
+        if(four is not None):
+            GPIO.output(self.POSITION_FOUR_LED_PIN, GPIO.HIGH if four else GPIO.LOW)
 
     def sample_lights(self):
         print('sample')
@@ -83,18 +74,3 @@ class Lights:
 
     def cleanup(self):
         self.set_lights(False, False, False, False)
-
-    def display_bins(self, bins):
-        pins: list[int] = []
-
-        for b in bins.bins:
-            if b.position == 1:
-                pins.append(self.POSITION_ONE_LED_PIN)
-            elif b.position == 2:
-                pins.append(self.POSITION_TWO_LED_PIN)
-            elif b.position == 3:
-                pins.append(self.POSITION_THREE_LED_PIN)
-            elif b.position == 4:
-                pins.append(self.POSITION_FOUR_LED_PIN)
-
-        self.set_lights_by_pins(pins)
