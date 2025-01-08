@@ -5,7 +5,6 @@ from screens.next_bin_day import NextBinDay
 from dataclasses import dataclass
 import http.client as httplib
 from drivers.drivers import Drivers
-
 from data.bins import BinDayRepository
 
 

@@ -1,8 +1,7 @@
 from drivers.buttons import Buttons
-from drivers.distance import Distance
+from drivers.movement import Movement
 from drivers.ldr_toggle import LdrToggle
 import time
-
 from drivers.drivers import Drivers
 from enum import Enum
 import time
@@ -26,7 +25,7 @@ class Inputs:
     def listen(self):
         events = []
 
-        if self._drivers.distance.movement_detected():
+        if self._drivers.movement.movement_detected():
             if self._movement_detected_at is None:
                 events.append(InputEvents.MOVEMENT_DETECTED)
             self._movement_detected_at = time.time()

@@ -7,7 +7,7 @@ import schedule
 from drivers.lcd import Lcd
 from drivers.ldr_toggle import LdrToggle
 from drivers.lights import Lights
-from drivers.distance import Distance
+from drivers.movement import Movement
 import threading
 from drivers.buttons import Buttons
 from drivers.drivers import Drivers
@@ -31,7 +31,7 @@ def run():
     drivers = Drivers(
         Lcd(),
         Lights(),
-        Distance(),
+        Movement(),
         Buttons(),
         LdrToggle()
     )
@@ -127,14 +127,13 @@ class AppRunner:
                         screen.handle_input(event)
 
                 # Redirect to the config page if config is not valid
-                if self._redirect_to_config:
+                if self._redirect_to_config and not isinstance(screen, CheckConfiguration):
                     self._redirect_to_config = False
                     self._cleanup(screen)
                     return self.run(CheckConfiguration())
 
                 # Tick the screen
                 screen.tick(self._drivers)
-
                 time.sleep(0.08)
 
         except KeyboardInterrupt:

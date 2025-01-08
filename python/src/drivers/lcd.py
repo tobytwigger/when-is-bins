@@ -1,6 +1,5 @@
 from RPLCD.gpio import CharLCD
 import RPi.GPIO as GPIO
-from database.db import Home
 
 class Lcd:
     LCD_E_PIN = 19
@@ -59,7 +58,6 @@ class Lcd:
         self._current_line_1 = line1
         self._current_line_2 = line2
         print(line1)
-        print('Updating LCD')
         self._lcd.clear()
         self._lcd.write_string(line1)
         self._lcd.cursor_pos = (1, 0)
