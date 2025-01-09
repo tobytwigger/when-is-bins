@@ -2,6 +2,7 @@
 import type {Bin} from "~/server/utils/drizzle";
 import {object, string, type InferType} from 'yup'
 import type {FormSubmitEvent} from "#ui/types";
+import * as wasi from "node:wasi";
 
 const props = defineProps<{
     position: number,
@@ -30,6 +31,7 @@ const state = ref<Schema>({
 })
 
 const isSubmitting = ref(false);
+const wasUpdated = ref<boolean>(true); // Initially true, so that when the bins load for the first time we update
 
 const updateBin = () => {
     isSubmitting.value = true;
@@ -38,6 +40,7 @@ const updateBin = () => {
         body: state.value
     })
         .then(() => {
+            wasUpdated.value = true;
             toast.add({
                 title: 'Bin updated',
                 description: 'The bin has been updated',
@@ -49,7 +52,6 @@ const updateBin = () => {
         })
         .finally(() => {
             isSubmitting.value = false;
-            emit('updated')
         });
 }
 
@@ -58,9 +60,12 @@ const isDirty = computed(() => {
 })
 
 watch(() => props.bin, () => {
-    state.value.humanName = props.bin?.name ?? ''
-    state.value.option = props.bin?.council_name ?? ''
-}, {immediate: true})
+    if(wasUpdated.value) {
+        wasUpdated.value = false;
+        state.value.humanName = props.bin?.name ?? ''
+        state.value.option = props.bin?.council_name ?? ''
+    }
+})
 
 const isDeleting = ref(false);
 
@@ -153,6 +158,11 @@ const move = (direction) => {
                          v-if="isDirty" :loading="isSubmitting" type="submit"
                          @click="updateBin">
                     Submit
+                </UButton>
+                    <UButton icon="i-heroicons-trash" class="w-min"
+                         v-if="props.bin !== null" :loading="isDeleting" color="red"
+                         @click="del">
+                    Clear
                 </UButton>
             </div>
 

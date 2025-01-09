@@ -1,19 +1,19 @@
 <template>
     <LayoutsHome :home-id="homeId">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" v-if="!isLoadingBins">
-            <BinSetup :home-id="homeId" :position="1" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 1) || null" @updated="loadBins">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" v-show="!isLoadingBins">
+            <BinSetup :key="1" :home-id="homeId" :position="1" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 1) || null" @updated="loadBins">
 
             </BinSetup>
 
-            <BinSetup :home-id="homeId" :position="2" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 2) || null" @updated="loadBins">
+            <BinSetup :key="2" :home-id="homeId" :position="2" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 2) || null" @updated="loadBins">
 
             </BinSetup>
 
-            <BinSetup :home-id="homeId" :position="3" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 3) || null" @updated="loadBins">
+            <BinSetup :key="3" :home-id="homeId" :position="3" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 3) || null" @updated="loadBins">
 
             </BinSetup>
 
-            <BinSetup :home-id="homeId" :position="4" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 4) || null" @updated="loadBins">
+            <BinSetup :key="4" :home-id="homeId" :position="4" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 4) || null" @updated="loadBins">
 
             </BinSetup>
         </div>

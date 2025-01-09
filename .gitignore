@@ -27,3 +27,5 @@ database.sqlite
 python/.venv
 
 schematics/whenisbins/whenisbins-backups
+python/src/database/__pycache__/
+python/src/data/__pycache__/
