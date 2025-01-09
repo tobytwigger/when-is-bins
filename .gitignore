@@ -25,3 +25,5 @@ logs
 database.sqlite
 
 python/.venv
+
+schematics/whenisbins/whenisbins-backups

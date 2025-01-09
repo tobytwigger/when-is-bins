@@ -5,7 +5,6 @@ import time
 import signal
 import schedule
 from drivers.lcd import Lcd
-from drivers.ldr_toggle import LdrToggle
 from drivers.lights import Lights
 from drivers.movement import Movement
 import threading
@@ -33,7 +32,6 @@ def run():
         Lights(),
         Movement(),
         Buttons(),
-        LdrToggle()
     )
 
     screen = WelcomeScreen()
@@ -44,9 +42,8 @@ def run():
 
 
 def set_up_gpio():
-    GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    GPIO.cleanup()
+    GPIO.setwarnings(False)
 
 
 class AppRunner:
@@ -166,7 +163,6 @@ class AppRunner:
             return self.run(quitting_screen)
 
         GPIO.cleanup()
-        pass
 
     def set_quitting_screen(self, quitting_screen: Screen):
         self._quitting_screen = quitting_screen

@@ -2,13 +2,13 @@ from RPLCD.gpio import CharLCD
 import RPi.GPIO as GPIO
 
 class Lcd:
-    LCD_E_PIN = 19
-    LCD_RS_PIN = 26
-    LCD_D4_PIN = 13
-    LCD_D5_PIN = 6
-    LCD_D6_PIN = 5
-    LCD_D7_PIN = 11
-    LCD_BACKLIGHT_TOGGLE_PIN = 22
+    LCD_E_PIN = 3
+    LCD_RS_PIN = 2
+    LCD_D4_PIN = 4
+    LCD_D5_PIN = 17
+    LCD_D6_PIN = 27
+    LCD_D7_PIN = 22
+    LCD_BACKLIGHT_TOGGLE_PIN = 10
 
     LCD_WIDTH = 16
 
@@ -57,7 +57,6 @@ class Lcd:
 
         self._current_line_1 = line1
         self._current_line_2 = line2
-        print(line1)
         self._lcd.clear()
         self._lcd.write_string(line1)
         self._lcd.cursor_pos = (1, 0)

@@ -1,10 +1,10 @@
-from gpiozero import MotionSensor
+from RPi import GPIO
 
 class Movement:
+    MOTION_SENSOR_PIN = 9
+
     def __init__(self):
-        self._pir = MotionSensor(4)
+        GPIO.setup(self.MOTION_SENSOR_PIN, GPIO.IN)
 
     def movement_detected(self):
-        # print(self._pir.)
-        print("Movement detected")
-        return True
+        return GPIO.input(self.MOTION_SENSOR_PIN) == GPIO.HIGH

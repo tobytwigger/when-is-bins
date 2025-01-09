@@ -1,10 +1,9 @@
 class Drivers:
-    def __init__(self, lcd, lights, movement, buttons, ldr_toggle):
+    def __init__(self, lcd, lights, movement, buttons):
         self.lcd = lcd
         self.lights = lights
-        self.movement = movement
         self.buttons = buttons
-        self.ldr_toggle = ldr_toggle
+        self.movement = movement
 
     def cleanup(self):
         self.lcd.cleanup()

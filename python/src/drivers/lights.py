@@ -2,14 +2,15 @@ import RPi.GPIO as GPIO
 import time
 
 class Lights:
-    POSITION_FOUR_LED_PIN = 21
-    POSITION_THREE_LED_PIN = 27
-    POSITION_ONE_LED_PIN = 17
-    POSITION_TWO_LED_PIN = 20
+    POSITION_ONE_LED_PIN = 18
+    POSITION_TWO_LED_PIN = 23
+    POSITION_THREE_LED_PIN = 24
+    POSITION_FOUR_LED_PIN = 25
 
     _sleeping = False
 
     def __init__(self):
+        print('initing')
         GPIO.setup(self.POSITION_FOUR_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_THREE_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_ONE_LED_PIN, GPIO.OUT)

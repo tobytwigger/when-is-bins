@@ -32,6 +32,7 @@ class NextBinDay(Screen):
         self._visible_date = ValueChangeNotifier()
         self._home = HomeValue()
         self._bin_configuration = BinConfigValue()
+        self._selected_bin = ValueChangeNotifier(None)
         self._sleeping = ValueChangeNotifier(False)
 
     def schedule(self, schedule: Scheduler):
@@ -59,6 +60,26 @@ class NextBinDay(Screen):
             self._sleeping.value = False
         elif event == InputEvents.MOVEMENT_STOPPED:
             self._sleeping.value = True
+        elif event == InputEvents.BIN_1_PRESSED:
+            if self._selected_bin.value == 1:
+                self._selected_bin.value = None
+            else:
+                self._selected_bin.value = 1
+        elif event == InputEvents.BIN_2_PRESSED:
+            if self._selected_bin.value == 2:
+                self._selected_bin.value = None
+            else:
+                self._selected_bin.value = 2
+        elif event == InputEvents.BIN_3_PRESSED:
+            if self._selected_bin.value == 3:
+                self._selected_bin.value = None
+            else:
+                self._selected_bin.value = 3
+        elif event == InputEvents.BIN_4_PRESSED:
+            if self._selected_bin.value == 4:
+                self._selected_bin.value = None
+            else:
+                self._selected_bin.value = 4
 
     def tick(self, drivers):
         should_reload_data = False
@@ -82,11 +103,15 @@ class NextBinDay(Screen):
             should_show = True
 
         if self._bin_configuration.handle_change():
-            print('Bin configuration changed')
             should_reload_data = True
+
+        if self._selected_bin.handle_change():
+            self._visible_date.value = None
+            should_show = True
 
         if should_reload_data:
             self._load_bin_data()
+
         if should_show:
             self._show_bin_data(drivers)
 
@@ -97,30 +122,82 @@ class NextBinDay(Screen):
             drivers.lights.set_lights(False, False, False, False)
             return
 
-        date = self._visible_date.value
-        if date is None:
-            date = self._bin_data.value.first_date()
+        if self._selected_bin.value is not None:
+            # Get the name of the selected bin
+            bin = None
 
-        bins = self._bin_data.value.get_for_date(date)
+            for b in self._bin_configuration.value:
+                if b.position == self._selected_bin.value:
+                    bin = b
+                    break
 
-        if bins is None:
-            drivers.lcd.display('No Bins', 'Found', drivers.lcd.TEXT_STYLE_CENTER)
-            drivers.lights.set_lights(False, False, False, False)
+            if bin is None:
+                self._show_bin_not_found(drivers)
+            else:
+                # Change the visible date
+                dates = self._bin_data.value.get_dates_for_bin(bin.council_name)
+
+                if len(dates) > 0 and (self._visible_date.value is None or self._visible_date.value not in dates):
+                    self._visible_date.value = dates[0]
+
+                if self._visible_date.value is None:
+                    self._show_bin_not_found(drivers)
+                else:
+                    self._show_single_bin(drivers, bin, self._visible_date.value)
+
         else:
-            drivers.lcd.display(
-                bins.date.strftime('%a, %d %b %G'),
-                '',
-                drivers.lcd.TEXT_STYLE_CENTER
-            )
+            date = self._visible_date.value
+            if date is None:
+                date = self._bin_data.value.first_date()
 
-            bin_state: list[bool] = [False, False, False, False]
+            bins = self._bin_data.value.get_for_date(date)
 
-            for b in bins.bins:
-                bin_state[b.position - 1] = True
+            if bins is None:
+                self._show_empty_bins(drivers)
+            else:
+                self._show_all_bins(drivers, bins)
 
-            drivers.lights.set_lights(
-                bin_state[0],
-                bin_state[1],
-                bin_state[2],
-                bin_state[3]
-            )
+    def _show_empty_bins(self, drivers):
+        drivers.lcd.display('No Bins', 'Found', drivers.lcd.TEXT_STYLE_CENTER)
+        drivers.lights.set_lights(False, False, False, False)
+
+    def _show_bin_not_found(self, drivers):
+        drivers.lcd.display('No Bin', 'Found', drivers.lcd.TEXT_STYLE_CENTER)
+        drivers.lights.set_lights(False, False, False, False)
+
+    def _show_single_bin(self, drivers, bin, date):
+        drivers.lcd.display(
+            date.strftime('%a, %d %b %G'),
+            bin.name,
+            drivers.lcd.TEXT_STYLE_CENTER
+        )
+
+        bin_state: list[bool] = [False, False, False, False]
+
+        bin_state[bin.position - 1] = True
+
+        drivers.lights.set_lights(
+            bin_state[0],
+            bin_state[1],
+            bin_state[2],
+            bin_state[3]
+        )
+
+    def _show_all_bins(self, drivers, bins):
+        drivers.lcd.display(
+            bins.date.strftime('%a, %d %b %G'),
+            '',
+            drivers.lcd.TEXT_STYLE_CENTER
+        )
+
+        bin_state: list[bool] = [False, False, False, False]
+
+        for b in bins.bins:
+            bin_state[b.position - 1] = True
+
+        drivers.lights.set_lights(
+            bin_state[0],
+            bin_state[1],
+            bin_state[2],
+            bin_state[3]
+        )
