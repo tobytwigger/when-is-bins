@@ -3,7 +3,7 @@ from schedule import Scheduler, CancelJob
 from database.db import Home, Bin
 from data.bins import BinDayRepository
 from drivers.inputs import InputEvents
-
+import datetime
 from utils.state import ValueChangeNotifier
 
 class HomeValue(ValueChangeNotifier):
@@ -143,7 +143,10 @@ class NextBinDay(Screen):
                 if self._visible_date.value is None:
                     self._show_bin_not_found(drivers)
                 else:
-                    self._show_single_bin(drivers, bin, self._visible_date.value)
+                    # Check the dates array to see if we have a date that occurs after the visible date
+                    has_next_date = dates.index(self._visible_date.value) < len(dates) - 1
+                    has_previous_date = dates.index(self._visible_date.value) > 0
+                    self._show_single_bin(drivers, bin, self._visible_date.value, has_next_date, has_previous_date)
 
         else:
             date = self._visible_date.value
@@ -151,11 +154,13 @@ class NextBinDay(Screen):
                 date = self._bin_data.value.first_date()
 
             bins = self._bin_data.value.get_for_date(date)
+            has_next_date = self._bin_data.value.next_date_after(date) is not None
+            has_previous_date = self._bin_data.value.date_before(date) is not None
 
             if bins is None:
                 self._show_empty_bins(drivers)
             else:
-                self._show_all_bins(drivers, bins)
+                self._show_all_bins(drivers, bins, has_next_date, has_previous_date)
 
     def _show_empty_bins(self, drivers):
         drivers.lcd.display('No Bins', 'Found', drivers.lcd.TEXT_STYLE_CENTER)
@@ -165,11 +170,13 @@ class NextBinDay(Screen):
         drivers.lcd.display('No Bin', 'Found', drivers.lcd.TEXT_STYLE_CENTER)
         drivers.lights.set_lights(False, False, False, False)
 
-    def _show_single_bin(self, drivers, bin, date):
+    def _show_single_bin(self, drivers, bin, date, has_next_date, has_previous_date):
         drivers.lcd.display(
-            date.strftime('%a, %d %b %G'),
+            date.strftime('%a, %d %b'),
             bin.name,
-            drivers.lcd.TEXT_STYLE_CENTER
+            drivers.lcd.TEXT_STYLE_CENTER,
+            prefix='<' if has_previous_date else None,
+            suffix='>' if has_next_date else None
         )
 
         bin_state: list[bool] = [False, False, False, False]
@@ -183,11 +190,14 @@ class NextBinDay(Screen):
             bin_state[3]
         )
 
-    def _show_all_bins(self, drivers, bins):
+    def _show_all_bins(self, drivers, bins, has_next_date, has_previous_date):
+        num_of_days_until_bins_date = (bins.date - datetime.date.today()).days
         drivers.lcd.display(
-            bins.date.strftime('%a, %d %b %G'),
-            '',
-            drivers.lcd.TEXT_STYLE_CENTER
+            bins.date.strftime('%a, %d %b'),
+            'In ' + str(num_of_days_until_bins_date) + ' ' + ('days' if num_of_days_until_bins_date == 1 else 'day'),
+            drivers.lcd.TEXT_STYLE_CENTER,
+            prefix='<' if has_previous_date else None,
+            suffix='>' if has_next_date else None
         )
 
         bin_state: list[bool] = [False, False, False, False]

@@ -37,7 +37,7 @@ class Lcd:
         GPIO.setup(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.OUT)  # Backlight enable
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.HIGH)
 
-    def display(self, line1, line2, style):
+    def display(self, line1, line2, style, prefix=None, suffix=None):
         if self._sleeping:
             return
 
@@ -52,12 +52,18 @@ class Lcd:
             line1 = line1.rjust(self.LCD_WIDTH, ' ')
             line2 = line2.rjust(self.LCD_WIDTH, ' ')
 
+        if prefix:
+            line1 = prefix + line1[len(prefix):]
+        if suffix:
+            line1 = line1[:self.LCD_WIDTH - len(suffix)] + suffix
+
         if self._current_line_1 == line1 and self._current_line_2 == line2:
             return
 
         self._current_line_1 = line1
         self._current_line_2 = line2
         self._lcd.clear()
+        self._lcd.cursor_mode = 'hide'
         self._lcd.write_string(line1)
         self._lcd.cursor_pos = (1, 0)
         self._lcd.write_string(line2)
@@ -66,10 +72,10 @@ class Lcd:
         if self._sleeping:
             return
         self._lcd.clear()
+        self._lcd.cursor_mode = 'hide'
         self._current_line_1 = None
         self._current_line_2 = None
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.LOW)
-        # self._lcd.backlight_enabled = False
         self._sleeping = True
 
     def wake(self):
@@ -77,7 +83,8 @@ class Lcd:
             return
         self._sleeping = False
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.HIGH)
-        # self._lcd.backlight_enabled = True
+        self._lcd.cursor_mode = 'hide'
 
     def cleanup(self):
         self._lcd.clear()
+        self._lcd.cursor_mode = 'hide'

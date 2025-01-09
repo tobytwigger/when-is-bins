@@ -17,7 +17,7 @@ class WelcomeScreen(Screen):
 
 
     def show_initial_state(self, drivers):
-        drivers.lcd.display('Welcome', '', drivers.lcd.TEXT_STYLE_CENTER)
+        drivers.lcd.display('The Bindicator', 'When is bins?', drivers.lcd.TEXT_STYLE_CENTER)
 
     def redirect(self):
         if self._finish_booting:
