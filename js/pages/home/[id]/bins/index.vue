@@ -1,5 +1,8 @@
 <template>
     <LayoutsHome :home-id="homeId">
+        <div class="flex flex-row w-full justify-end" v-if="isLoadingBinOptions">
+              <UProgress animation="carousel" />
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" v-show="!isLoadingBins">
             <BinSetup :key="1" :home-id="homeId" :position="1" :options="binOptions" :bin="(bins ?? []).find(b => b.position === 1) || null" @updated="loadBins">
 

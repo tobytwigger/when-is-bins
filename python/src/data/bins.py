@@ -84,10 +84,16 @@ class BinDayRepository:
         args = [
             self._home.council,  # Council name
             "http://example.com",  # URL to scrape
-            "--postcode", "MK12 5AN",  # Postcode
-            "--number", "59",  # Postcode
             "-s",
         ]
+
+        if 'postcode' in self._home.council_data:
+            args.append("-p")
+            args.append(self._home.council_data['postcode'])
+
+        if 'house_number' in self._home.council_data:
+            args.append("-n")
+            args.append(self._home.council_data['house_number'])
 
         if 'uprn' in self._home.council_data:
             args.append("-u")

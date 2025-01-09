@@ -24,6 +24,8 @@
             <div v-if="selectedCouncil">
                 <component :is="selectedCouncil.component"
                            :value="state.councilData"
+                           :key="selectedCouncil.key ?? 'unselected'"
+                           :properties="selectedCouncil.properties"
                            @update:value="state.councilData = $event">
 
                 </component>
