@@ -57,8 +57,8 @@ const links = [{
     icon: 'i-heroicons-trash',
     to: '/home/' + props.homeId + '/bins'
 }, {
-    label: 'Bin Days',
+    label: 'Schedule',
     icon: 'i-heroicons-calendar',
-    to: '/home/' + props.homeId + '/bin-days'
+    to: '/home/' + props.homeId + '/schedule'
 }]
 </script>

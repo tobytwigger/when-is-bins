@@ -67,6 +67,11 @@ watch(() => props.bin, () => {
     }
 })
 
+onMounted(() => {
+    state.value.humanName = props.bin?.name ?? ''
+    state.value.option = props.bin?.council_name ?? ''
+})
+
 const isDeleting = ref(false);
 
 const del = () => {
@@ -75,17 +80,18 @@ const del = () => {
         method: 'DELETE'
     })
         .then(() => {
+            wasUpdated.value = true;
             toast.add({
                 title: 'Bin cleared',
                 description: 'The bin has been cleared',
             })
+            emit('updated')
         })
         .catch((error) => {
             console.error(error);
         })
         .finally(() => {
             isDeleting.value = false;
-            emit('updated')
         });
 }
 

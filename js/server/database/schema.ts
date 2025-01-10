@@ -17,3 +17,25 @@ export const bins = sqliteTable('bins', {
 }, (t) => ({
     unq: unique().on(t.position, t.home_id)
 }));
+
+export const schedules = sqliteTable('schedules', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    start: text('start', {mode: 'timestamp'}).notNull(),
+    end: text('end', {mode: 'timestamp'}),
+    repeat_weeks: integer('repeat').notNull(),
+    home_id: integer('home_id').notNull().references(() => homes.id),
+});
+
+export const bin_schedules = sqliteTable('bin_schedules', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    bin_id: integer('bin_id').notNull().references(() => bins.id),
+    schedule_id: integer('schedule_id').notNull().references(() => schedules.id),
+});
+
+export const bin_days = sqliteTable('bin_days', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    bin_id: integer('bin_id').notNull().references(() => bins.id),
+    date: text('date', {mode: 'timestamp'}).notNull(),
+    home_id: integer('home_id').notNull().references(() => homes.id),
+    schedule_id: integer('schedule_id').references(() => schedules.id),
+});

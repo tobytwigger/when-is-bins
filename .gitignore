@@ -29,3 +29,4 @@ python/.venv
 schematics/whenisbins/whenisbins-backups
 python/src/database/__pycache__/
 python/src/data/__pycache__/
+node_modules

@@ -6,7 +6,6 @@ export default defineNitroPlugin(async (nitroApp) => {
 			let migrationsFolder = process.env.NODE_ENV === 'development'
 				? 'server/database/migrations'
 				: '/home/toby/when-is-bins/js/server/database/migrations'
-			console.log(migrationsFolder)
 		await migrate(db, { migrationsFolder: migrationsFolder })
 		console.log('Migration completed ✅')
 	} catch (error) {
