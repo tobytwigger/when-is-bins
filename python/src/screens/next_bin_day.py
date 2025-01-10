@@ -194,7 +194,7 @@ class NextBinDay(Screen):
         num_of_days_until_bins_date = (bins.date - datetime.date.today()).days
         drivers.lcd.display(
             bins.date.strftime('%a, %d %b'),
-            'In ' + str(num_of_days_until_bins_date) + ' ' + ('days' if num_of_days_until_bins_date == 1 else 'day'),
+            'In ' + str(num_of_days_until_bins_date) + ' ' + ('day' if num_of_days_until_bins_date == 1 else 'days'),
             drivers.lcd.TEXT_STYLE_CENTER,
             prefix='<' if has_previous_date else None,
             suffix='>' if has_next_date else None

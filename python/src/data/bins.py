@@ -4,6 +4,9 @@ from dataclasses import dataclass
 import json
 from database.db import Home, Bin
 
+from data.selenium import SeleniumDriverManager
+
+
 @dataclass
 class BinInformation:
     """Class for a specific bin"""
@@ -101,6 +104,9 @@ class BinDayRepository:
 
         self._bin_collection_api = UKBinCollectionApp()
         self._bin_collection_api.set_args(args)
+
+        selenium_manager = SeleniumDriverManager()
+        selenium_manager.setup_cache()
 
 
     def get_bin_data(self) -> BinDayInformationCollection:

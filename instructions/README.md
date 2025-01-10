@@ -28,3 +28,6 @@ TODO:
 
 - Edit bin days, and load in application
 
+
+
+sudo apt install chromium-chromedriver fixes the issue with selenium. This installs a chromium driver that works on arm architecture. 
