@@ -10,7 +10,6 @@ class Lights:
     _sleeping = False
 
     def __init__(self):
-        print('initing')
         GPIO.setup(self.POSITION_FOUR_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_THREE_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_ONE_LED_PIN, GPIO.OUT)

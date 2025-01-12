@@ -36,7 +36,7 @@ class NextBinDay(Screen):
         self._sleeping = ValueChangeNotifier(False)
 
     def schedule(self, schedule: Scheduler):
-        schedule.every(30).minutes.do(self._load_bin_data)
+        schedule.every(1).minutes.do(self._load_bin_data)
         schedule.every(4).seconds.do(self._refresh_values)
 
     def _refresh_values(self):
@@ -135,7 +135,7 @@ class NextBinDay(Screen):
                 self._show_bin_not_found(drivers)
             else:
                 # Change the visible date
-                dates = self._bin_data.value.get_dates_for_bin(bin.council_name)
+                dates = self._bin_data.value.get_dates_for_bin(bin.id)
 
                 if len(dates) > 0 and (self._visible_date.value is None or self._visible_date.value not in dates):
                     self._visible_date.value = dates[0]
@@ -191,6 +191,7 @@ class NextBinDay(Screen):
         )
 
     def _show_all_bins(self, drivers, bins, has_next_date, has_previous_date):
+        print(bins)
         num_of_days_until_bins_date = (bins.date - datetime.date.today()).days
         drivers.lcd.display(
             bins.date.strftime('%a, %d %b'),

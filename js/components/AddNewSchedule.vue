@@ -33,6 +33,7 @@ const state = reactive({
 const isSubmitting = ref<boolean>(false);
 const toast = useToast();
 const onSubmit = (event: FormSubmitEvent<Schema>) => {
+    isSubmitting.value = true;
     $fetch(`/api/home/${props.homeId}/schedule`, {
         method: 'POST',
         body: state
@@ -97,7 +98,7 @@ const loadBins = () => {
         <UFormGroup label="Bins" name="bins" hint="Which bins go out on this schedule?">
             <USelectMenu v-model="state.bins" :options="bins"
                          value-attribute="id"
-                         option-attribute="council_name"
+                         option-attribute="name"
                          multiple placeholder="Select bins">
                 <template #empty>
                     <span v-if="isLoadingBins">

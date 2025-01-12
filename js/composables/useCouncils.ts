@@ -11,12 +11,15 @@ export const useCouncils = () => {
     ];
 
     const councilSelectSchema = computed(() => {
-        return councils.map(council => {
-            return {
-                value: council.key,
-                label: council.name
-            }
-        })
+        return [{value: null, label: 'Other'}]
+            .concat(
+                councils.map(council => {
+                    return {
+                        value: council.key,
+                        label: council.name
+                    }
+                })
+            );
     });
 
     const councilKeys = computed<Array<string>>(() => {

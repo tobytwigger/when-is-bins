@@ -49,10 +49,6 @@ class ConfigurationChecker:
             self._not_connected_to_internet()
         )
 
-    # TODO Check if Wifi is connected
-
-    # TODO Check the home connection using api test
-
     def _missing_active_home(self):
         return Home.get_active() is None
 

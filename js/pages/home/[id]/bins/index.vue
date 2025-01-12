@@ -1,11 +1,15 @@
 <template>
     <LayoutsHome :home-id="homeId">
-        <div class="flex flex-row w-full justify-end" v-if="isLoadingBinOptions">
+        <div class="flex flex-row w-full justify-end mb-2">
+            <UButton color="gray" icon="i-heroicons-arrow-path" @click="loadBinOptions" :loading="isLoadingBinOptions">Load bin options from council</UButton>
+        </div>
+        <div class="flex flex-row w-full justify-end mb-2" v-if="isLoadingBinOptions">
               <UProgress animation="carousel" />
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" v-show="!isLoadingBins">
             <div v-for="position in noOfVisibleBins">
-                <BinSetup :key="position" :home-id="homeId" :position="position" :options="binOptions" :bin="(bins ?? []).find(b => b.position === position) || null" @updated="loadBins">
+                <BinSetup :key="('position:' + ((bins ?? []).find(b => b.position === position)?.id ?? 'Empty'))" :home-id="homeId" :position="position" :options="binOptions"
+                          :bin="(bins ?? []).find(b => b.position === position) || null" @updated="loadBins">
 
                 </BinSetup>
             </div>
@@ -78,7 +82,7 @@ const loadBins = () => {
         })
 }
 
-const isLoadingBinOptions = ref<boolean>(true)
+const isLoadingBinOptions = ref<boolean>(false)
 const binOptions = ref<string[]>([])
 const loadBinOptions = () => {
     isLoadingBinOptions.value = true
@@ -96,7 +100,6 @@ const loadBinOptions = () => {
 
 onMounted(() => {
     loadBins();
-    loadBinOptions();
 })
 
 </script>

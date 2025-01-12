@@ -3,9 +3,10 @@ import {sqliteTable, text, integer, unique} from 'drizzle-orm/sqlite-core'
 export const homes = sqliteTable('homes', {
     id: integer('id').primaryKey({ autoIncrement: true }),
     name: text('name').notNull().unique(),
-    council: text('council').notNull(),
+    council: text('council'),
     council_data: text('council_data', {mode: 'json'}),
     active: integer('active', {mode: 'boolean'}).notNull().default(false),
+    timeout: integer('timeout').notNull().default(180),
 })
 
 export const bins = sqliteTable('bins', {
@@ -38,4 +39,11 @@ export const bin_days = sqliteTable('bin_days', {
     date: text('date', {mode: 'timestamp'}).notNull(),
     home_id: integer('home_id').notNull().references(() => homes.id),
     schedule_id: integer('schedule_id').references(() => schedules.id),
+});
+
+export const bin_day_replacements = sqliteTable('bin_day_replacements', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    replace: text('replace', {mode: 'timestamp'}),
+    with: text('with', {mode: 'timestamp'}).notNull(),
+    home_id: integer('home_id').notNull().references(() => homes.id),
 });

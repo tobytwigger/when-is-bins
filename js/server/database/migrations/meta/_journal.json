@@ -57,6 +57,41 @@
       "when": 1736518406630,
       "tag": "0007_noisy_hellfire_club",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1736706381866,
+      "tag": "0008_cuddly_zaladane",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1736707270973,
+      "tag": "0009_panoramic_onslaught",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1736707908404,
+      "tag": "0010_cold_blob",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1736708227601,
+      "tag": "0011_workable_ronan",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1736719870411,
+      "tag": "0012_cuddly_fabian_cortez",
+      "breakpoints": true
     }
   ]
 }

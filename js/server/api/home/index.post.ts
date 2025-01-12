@@ -4,7 +4,8 @@ export default defineEventHandler(async (event) => {
     const {
         name,
         council,
-        councilData
+        councilData,
+        timeout
     } = await readBody(event).catch(() => {})
 
     let alreadyAnActiveHome = await useDrizzle().select().from(tables.homes).where(eq(tables.homes.active, true)).get()
@@ -13,7 +14,8 @@ export default defineEventHandler(async (event) => {
         name,
         council,
         council_data: councilData,
-        active: !alreadyAnActiveHome?.id
+        active: !alreadyAnActiveHome?.id,
+        timeout
     }).returning().get()
 
     return home;

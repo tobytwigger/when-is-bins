@@ -31,8 +31,8 @@ export default defineEventHandler(async (event) => {
 
             if(row.bin_days) {
                 let binDay = new Date(Math.ceil(row.bin_days.date));
-                // set 'next_date' if binDay is the earliest one
-                if(acc[schedule.id].next_date === null || binDay < acc[schedule.id].next_date) {
+                // set 'next_date' if binDay is the earliest one after today
+                if((acc[schedule.id].next_date === null || binDay < acc[schedule.id].next_date) && binDay > new Date()) {
                     acc[schedule.id].next_date = binDay;
                 }
 

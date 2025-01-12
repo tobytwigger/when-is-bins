@@ -17,6 +17,7 @@ class Home(Model):
     council = CharField()
     council_data = JSONField()
     active = BooleanField()
+    timeout = IntegerField()
 
     @classmethod
     def get_active(cls):
@@ -33,3 +34,34 @@ class Bin(Model):
     name = CharField()
     position = IntegerField()
     home_id = ForeignKeyField(Home, backref='bins')
+
+class Schedule(Model):
+    class Meta:
+        database = db
+        table_name = 'schedules'
+
+    id = AutoField()
+    start = DateField()
+    end = DateField(null=True)
+    repeat_weeks = IntegerField()
+    home_id = ForeignKeyField(Home, backref='schedules')
+
+class BinSchedule(Model):
+    class Meta:
+        database = db
+        table_name = 'bin_schedules'
+
+    id = AutoField()
+    bin_id = ForeignKeyField(Bin, backref='bin_schedules')
+    schedule_id = ForeignKeyField(Schedule, backref='bin_schedules')
+
+class BinDay(Model):
+    class Meta:
+        database = db
+        table_name = 'bin_days'
+
+    id = AutoField()
+    bin_id = ForeignKeyField(Bin, backref='bin_days')
+    date = DateField()
+    home_id = ForeignKeyField(Home, backref='bin_days')
+    schedule_id = ForeignKeyField(Schedule, backref='bin_days')

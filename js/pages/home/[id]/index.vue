@@ -1,15 +1,46 @@
 <template>
     <LayoutsHome :home-id="homeId">
 
-        <div class="flex flex-row justify-end">
-            <UButton @click="test" :loading="isTesting">Test</UButton>
+        <div class="flex flex-row justify-end space-x-2">
+            <NuxtLink :to="'/home/' + homeId + '/edit'">
+                <UButton color="gray" icon="i-heroicons-pencil" label="Edit" />
+            </NuxtLink>
+
+            <UButton color="gray" @click="test" :loading="isTesting">Test</UButton>
+        </div>
+
+        <div class="mt-8 space-y-2">
+            <div v-if="!hasBins">
+                <NuxtLink :to="'/home/' + homeId + '/bins'">
+                    <UAlert
+                        icon="i-heroicons-trash"
+                        color="orange"
+                        variant="solid"
+                        title="Set up bins"
+                    />
+
+                </NuxtLink>
+            </div>
+
+            <div v-if="!hasSchedule">
+                <NuxtLink :to="'/home/' + homeId + '/schedule'">
+                    <UAlert
+                        icon="i-heroicons-trash"
+                        color="orange"
+                        variant="solid"
+                        title="Set up schedule"
+                        description="Tell the bindicator when your bins go out"
+                    />
+                </NuxtLink>
+            </div>
+        </div>
+
+        <div class="flex flex-row space-x-4">
+            <span class="font-bold">Home Name</span>
+            <span>{{home?.name}}</span>
         </div>
 
         <div class="flex flex-col" v-if="selectedCouncil">
-            <div class="flex flex-row space-x-4">
-                <span class="font-bold">Home Name</span>
-                <span>{{home?.name}}</span>
-            </div>
 
             <div class="flex flex-row space-x-4">
                 <span class="font-bold">Council</span>
@@ -22,9 +53,16 @@
                     <span>{{home?.council_data[key]}}</span>
                 </div>
             </div>
-
-
         </div>
+
+        <div class="flex flex-col space-y-2" v-if="home">
+            <span class="font-bold">Settings</span>
+            <div class="flex flex-row space-x-4 ml-8">
+                <span class="font-bold">Timeout</span>
+                <span>{{home.timeout ?? 'N/A' }}s</span>
+            </div>
+        </div>
+
     </LayoutsHome>
 </template>
 
@@ -50,12 +88,15 @@ onMounted(() => {
 })
 
 const isLoadingHome = ref<boolean>(true)
-
+const hasSchedule = ref<boolean>(false)
+const hasBins = ref<boolean>(false)
 const loadHome = () => {
     isLoadingHome.value = true
     $fetch(`/api/home/${homeId}`)
         .then((response) => {
             home.value = response.home || null
+            hasSchedule.value = response.has_schedule
+            hasBins.value = response.has_bins
         })
         .catch((error) => {
             console.error(error)

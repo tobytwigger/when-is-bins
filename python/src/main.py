@@ -11,10 +11,13 @@ import threading
 from drivers.buttons import Buttons
 from drivers.drivers import Drivers
 from drivers.inputs import Inputs
+from python.src.config.config import ConfigRepository
 from screens.check_configuration import ConfigurationChecker, CheckConfiguration
 from screens.goodbye import GoodbyeScreen
+from screens.error import ErrorScreen
 from screens.welcome import WelcomeScreen
 from screens.abstract_screen import Screen
+import logging
 
 should_kill = False
 
@@ -22,10 +25,15 @@ def sigterm_handler(signal, frame):
     global should_kill
     should_kill = True
 
+def log_error(e):
+    print(e)
+
 def run():
     signal.signal(signal.SIGTERM, sigterm_handler)
 
     set_up_gpio()
+
+    config = ConfigRepository().get()
 
     drivers = Drivers(
         Lcd(),
@@ -34,12 +42,20 @@ def run():
         Buttons(),
     )
 
+    inputs = Inputs(
+        drivers,
+        config.timeout,
+    )
+
     screen = WelcomeScreen()
 
-    runner = AppRunner(drivers)
+    runner = AppRunner(drivers, inputs)
     runner.set_quitting_screen(GoodbyeScreen())
-    runner.run(screen)
-
+    try:
+        runner.run(screen)
+    except Exception as e:
+        runner.set_quitting_screen(ErrorScreen())
+        runner.handle_exception(e)
 
 def set_up_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -47,14 +63,13 @@ def set_up_gpio():
 
 
 class AppRunner:
-    def __init__(self, drivers: Drivers):
+    def __init__(self, drivers: Drivers, inputs: Inputs):
         self._quitting_screen = None
         self._drivers = drivers
         self._stop_schedule = None
         self._schedule = None
         self._redirect_to_config = False
-        self._inputs = Inputs(drivers)
-
+        self._inputs = inputs
 
     def _run_schedule_in_background(self):
         """Continuously run, while executing pending jobs at each
@@ -163,6 +178,10 @@ class AppRunner:
             return self.run(quitting_screen)
 
         GPIO.cleanup()
+
+    def handle_exception(self, e):
+        logging.exception('An error occurred')
+        self._quit()
 
     def set_quitting_screen(self, quitting_screen: Screen):
         self._quitting_screen = quitting_screen

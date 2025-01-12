@@ -18,12 +18,12 @@ class InputEvents(Enum):
     BIN_4_PRESSED = 8
 
 class Inputs:
-    movement_timeout = 30 # seconds since last movement detected to consider movement stopped
     _movement_detected_at = None
 
-    def __init__(self, drivers: Drivers):
+    def __init__(self, drivers: Drivers, timeout):
         self._drivers = drivers
         self._throttle = {}
+        self._movement_timeout = timeout
 
     def listen(self):
         events = []

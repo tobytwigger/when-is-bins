@@ -21,7 +21,7 @@ onMounted(() => {
     let d = {}
     if(props.properties) {
         props.properties.forEach(p => {
-            d[p] = null
+            d[p] = props.value[p] || null;
         })
     }
     dynamicModel.value = d;
@@ -43,17 +43,30 @@ const dynamicModel = computed<Def>({
 </script>
 
 <template>
-    <UFormGroup label="House number" v-if="props.properties.includes(CouncilProperties.HouseNumber)">
-        <UInput v-model="dynamicModel.house_number" />
-    </UFormGroup>
 
-    <UFormGroup label="Postcode" v-if="props.properties.includes(CouncilProperties.Postcode)">
-        <UInput v-model="dynamicModel.postcode" />
-    </UFormGroup>
+    <UCard class="mt-4">
+        <template #header>
+            To use the council information, we need to know more about your property.
 
-    <UFormGroup label="UPRN" hint="Find your house UPRN at https://www.findmyaddress.co.uk/search" v-if="props.properties.includes(CouncilProperties.Uprn)">
-        <UInput v-model="dynamicModel.uprn" />
-    </UFormGroup>
+            You may leave this blank and fill it in later.
+        </template>
+
+        <div>
+            <UFormGroup label="House number" v-if="props.properties.includes(CouncilProperties.HouseNumber)">
+                <UInput v-model="dynamicModel.house_number" />
+            </UFormGroup>
+
+            <UFormGroup label="Postcode" v-if="props.properties.includes(CouncilProperties.Postcode)">
+                <UInput v-model="dynamicModel.postcode" />
+            </UFormGroup>
+
+            <UFormGroup label="UPRN" hint="Find your house UPRN at https://www.findmyaddress.co.uk/search" v-if="props.properties.includes(CouncilProperties.Uprn)">
+                <UInput v-model="dynamicModel.uprn" />
+            </UFormGroup>
+        </div>
+
+    </UCard>
+
 </template>
 
 <style scoped>

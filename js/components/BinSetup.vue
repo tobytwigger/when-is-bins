@@ -142,8 +142,11 @@ const move = (direction) => {
                 <UInput v-model="state.humanName"/>
             </UFormGroup>
 
-            <UFormGroup label="Bin" name="bin">
+            <UFormGroup label="Bin" name="bin"
+                        v-if="props.options.length > 0"
+            >
                 <USelectMenu
+                    v-if="props.options.length > 0"
                     v-model="state.option"
                     :options="props.options"
                     class="w-full"
@@ -163,7 +166,7 @@ const move = (direction) => {
                 <UButton icon="i-material-symbols-save-outline" class="w-min"
                          v-if="isDirty" :loading="isSubmitting" type="submit"
                          @click="updateBin">
-                    Submit
+                    Save
                 </UButton>
                     <UButton icon="i-heroicons-trash" class="w-min"
                          v-if="props.bin !== null" :loading="isDeleting" color="red"

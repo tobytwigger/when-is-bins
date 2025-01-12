@@ -12,5 +12,5 @@ export default defineNuxtConfig({
             '0 1 * * *': ['binschedule']
         }
 
-    }
+    },
 })

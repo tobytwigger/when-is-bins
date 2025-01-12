@@ -2,9 +2,10 @@ import datetime
 from uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
 from dataclasses import dataclass
 import json
-from database.db import Home, Bin
+from database.db import Home, Bin, BinDay, Schedule, BinSchedule
 
 from data.selenium import SeleniumDriverManager
+
 
 
 @dataclass
@@ -12,7 +13,8 @@ class BinInformation:
     """Class for a specific bin"""
     position: int
     name: str
-    human_name: str
+    id: int
+
 
 @dataclass
 class BinDayInformation:
@@ -22,6 +24,7 @@ class BinDayInformation:
 
     def push(self, bin: BinInformation):
         self.bins.append(bin)
+
 
 @dataclass
 class BinDayInformationCollection:
@@ -60,11 +63,11 @@ class BinDayInformationCollection:
 
         return self.last_date()
 
-    def get_dates_for_bin(self, bin_name: str) -> list[datetime.date]:
+    def get_dates_for_bin(self, bin_id: int) -> list[datetime.date]:
         dates = []
         for b in self.bin_days:
             for bin in b.bins:
-                if bin.name == bin_name:
+                if bin.id == bin_id:
                     dates.append(b.date)
 
         return dates
@@ -76,7 +79,61 @@ class BinDayInformationCollection:
 
         return None
 
+
 class BinDayRepository:
+
+    def __init__(self, home: Home, bin_config: list[Bin]):
+        self._home = home
+        self._bin_config = bin_config
+
+    def _create_bin_information(self, bin_id: int) -> BinInformation:
+        bins = self._bin_config
+
+        for b in bins:
+            if b.id == bin_id:
+                return BinInformation(b.position, b.name, b.id)
+
+    def get_bin_data(self) -> BinDayInformationCollection:
+        # Get all the future bin days from the database
+
+        # 1 minute past midnight tomorrow
+        get_bins_after_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
+
+        # Convert to milliseconds. This is because the database is controlled by js, which uses milliseconds in timestamps
+        timestamp_in_milliseconds = get_bins_after_date.timestamp() * 1000
+
+        bins = (BinDay.select(BinDay.date, BinDay.bin_id, BinDay.home_id, Bin.id, Bin.name)
+                .join(Bin, on=(Bin.id == BinDay.bin_id))
+                .where(BinDay.home_id == self._home.id)
+                .where(BinDay.date >= timestamp_in_milliseconds)
+                .order_by(BinDay.date)
+                )
+
+        bins_grouped_by_date = {}
+
+        for b in bins:
+            bin_timestamp = int(float(b.date)) / 1000
+            bin_date_formatted = datetime.datetime.fromtimestamp(bin_timestamp).strftime("%d/%m/%Y")
+
+            new_bin = self._create_bin_information(b.bin_id.id)
+            if new_bin:
+                day = bins_grouped_by_date.setdefault(bin_date_formatted, BinDayInformation(
+                    bins=[],
+                    date=datetime.datetime.strptime(bin_date_formatted, "%d/%m/%Y").date()
+                ))
+                day.push(new_bin)
+
+        collection = BinDayInformationCollection(list(bins_grouped_by_date.values()))
+
+        return collection
+
+    def get_bin_options(self):
+        remote_repository = RemoteBinDayRepository(self._home, self._bin_config)
+
+        return remote_repository.get_bin_options()
+
+
+class RemoteBinDayRepository:
 
     def __init__(self, home: Home, bin_config: list[Bin]):
         self._home = home
@@ -107,7 +164,6 @@ class BinDayRepository:
 
         selenium_manager = SeleniumDriverManager()
         selenium_manager.setup_cache()
-
 
     def get_bin_data(self) -> BinDayInformationCollection:
         remote_bin_data = self._bin_collection_api.run()

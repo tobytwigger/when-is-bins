@@ -20,3 +20,5 @@ export type Schedule = typeof schema.schedules.$inferSelect
 export type BinSchedule = typeof schema.bin_schedules.$inferSelect
 
 export type BinDay = typeof schema.bin_days.$inferSelect
+
+export type BinDayReplacement = typeof schema.bin_day_replacements.$inferSelect
