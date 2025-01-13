@@ -100,14 +100,12 @@ class AppRunner:
             # Quit the app
             self._quit()
 
-        print("Showing screen " + screen.__class__.__name__)
-
         # Create a scheduler
         self._schedule = schedule.Scheduler()
 
         # Add a regular job to check configuration
-        self._schedule.every(10).seconds.do(self._check_configuration)
-        self._schedule.every(15).seconds.do(self._check_settings)
+        self._schedule.every(1).minute.do(self._check_configuration)
+        self._schedule.every(1).minute.do(self._check_settings)
 
         # Let the screen define its schedule
         screen.schedule(self._schedule)

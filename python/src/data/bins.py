@@ -32,49 +32,56 @@ class BinDayInformationCollection:
 
     def __init__(self, bin_days: list[BinDayInformation]):
         self.bin_days = bin_days
-
-    def first_date(self) -> datetime.date or None:
+    def _get_bin_days_for_position(self, bin_position: int or None = None) -> list[BinDayInformation]:
         if len(self.bin_days) == 0:
+            return []
+
+        return [b for b in self.bin_days if bin_position is None or any([b2.position == bin_position for b2 in b.bins])]
+
+    def first_date(self, bin_position: int or None = None) -> datetime.date or None:
+        bin_days = self._get_bin_days_for_position(bin_position)
+
+        if len(bin_days) == 0:
             return None
-        return min([b.date for b in self.bin_days])
+        return min([b.date for b in bin_days])
 
     def last_date(self) -> datetime.date or None:
         if len(self.bin_days) == 0:
             return None
         return max([b.date for b in self.bin_days])
 
-    def next_date_after(self, after_date):
+    def next_date_after(self, after_date, bin_position: int or None = None):
         if after_date is None:
             return None
 
         for b in self.bin_days:
-            if b.date > after_date:
+            if b.date > after_date and (bin_position is None or any([b2.position == bin_position for b2 in b.bins])):
                 return b.date
 
         return None
 
-    def date_before(self, before_date):
+    def date_before(self, before_date, bin_position: int or None = None):
         if before_date is None:
             return None
 
-        for b in self.bin_days:
-            if b.date < before_date:
+        for b in reversed(self.bin_days):
+            if b.date < before_date and (bin_position is None or any([b2.position == bin_position for b2 in b.bins])):
                 return b.date
 
         return None
 
-    def get_dates_for_bin(self, bin_id: int) -> list[datetime.date]:
+    def get_dates_for_bin(self, bin_position: int or None = None) -> list[datetime.date]:
         dates = []
         for b in self.bin_days:
             for bin in b.bins:
-                if bin.id == bin_id:
+                if bin.position == bin_position:
                     dates.append(b.date)
 
         return dates
 
-    def get_for_date(self, date) -> BinDayInformation or None:
+    def get_for_date(self, date, bin_position: int or None = None) -> BinDayInformation or None:
         for b in self.bin_days:
-            if b.date == date:
+            if b.date == date and (bin_position is None or any([b2.position == bin_position for b2 in b.bins])):
                 return b
 
         return None
@@ -97,7 +104,7 @@ class BinDayRepository:
         # Get all the future bin days from the database
 
         # 1 minute past midnight tomorrow
-        get_bins_after_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)
+        get_bins_after_date = datetime.datetime.now().replace(hour=23, minute=59, second=59) - datetime.timedelta(days=1)
 
         # Convert to milliseconds. This is because the database is controlled by js, which uses milliseconds in timestamps
         timestamp_in_milliseconds = get_bins_after_date.timestamp() * 1000

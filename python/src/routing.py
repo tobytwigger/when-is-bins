@@ -28,10 +28,16 @@ class Routing:
 
         # We now know there are bins
 
-        visible_date = self._state.visible_date.value or datetime.date.today()
+        visible_date = self._state.visible_date.value
+
+        # If we have selected a bin, show the selected bin
+        if self._state.selected_bin.value is not None:
+            from screens.selected_bin import SelectedBin
+
+            return SelectedBin(self._state)
 
         # If a visible date is now, show the today
-        if visible_date == datetime.date.today():
+        if visible_date is None or visible_date == datetime.date.today():
             from screens.today import Today
 
             return Today(self._state)

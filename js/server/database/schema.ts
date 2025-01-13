@@ -7,6 +7,7 @@ export const homes = sqliteTable('homes', {
     council_data: text('council_data', {mode: 'json'}),
     active: integer('active', {mode: 'boolean'}).notNull().default(false),
     timeout: integer('timeout').notNull().default(180),
+    put_out_day_before: integer('put_out_day_before', {mode: 'boolean'}).notNull().default(false),
 })
 
 export const bins = sqliteTable('bins', {
@@ -39,6 +40,7 @@ export const bin_days = sqliteTable('bin_days', {
     date: text('date', {mode: 'timestamp'}).notNull(),
     home_id: integer('home_id').notNull().references(() => homes.id),
     schedule_id: integer('schedule_id').references(() => schedules.id),
+    put_out_at: text('put_out_at', {mode: 'timestamp'}),
 });
 
 export const bin_day_replacements = sqliteTable('bin_day_replacements', {

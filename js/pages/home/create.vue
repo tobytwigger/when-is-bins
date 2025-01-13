@@ -30,7 +30,8 @@ const state = ref<HomeFormSchema>({
     name: undefined,
     council: undefined,
     councilData: {},
-    timeout: 60
+    timeout: 60,
+    putOutDayBefore: false,
 })
 
 const isSubmitting = ref<boolean>(false);

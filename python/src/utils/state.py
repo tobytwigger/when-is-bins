@@ -124,7 +124,7 @@ class ScreenUsingState(Screen):
         self._state = state or State()
 
     def schedule(self, schedule: Scheduler):
-        schedule.every(5).seconds.do(self._refresh_state)
+        schedule.every(20).seconds.do(self._refresh_state)
         schedule.every(1).minutes.do(self._state.load_bin_data)
 
     def redirect(self):
@@ -136,36 +136,47 @@ class ScreenUsingState(Screen):
         return None
 
     def handle_input(self, event: InputEvents):
-        if event == InputEvents.LEFT_BUTTON_PRESSED:
-            self._state.visible_date.value = self._state.bin_data.value.date_before(self._state.visible_date.value)
-        elif event == InputEvents.RIGHT_BUTTON_PRESSED:
-            self._state.visible_date.value = self._state.bin_data.value.next_date_after(self._state.visible_date.value)
-        elif event == InputEvents.MOVEMENT_DETECTED:
+        if event == InputEvents.MOVEMENT_DETECTED:
             self._state.sleeping.value = False
         elif event == InputEvents.MOVEMENT_STOPPED:
             self._state.sleeping.value = True
-        elif event == InputEvents.BIN_1_PRESSED:
-            if self._state.selected_bin.value == 1:
+        elif event == InputEvents.BIN_1_PRESSED or event == InputEvents.BIN_2_PRESSED or event == InputEvents.BIN_3_PRESSED or event == InputEvents.BIN_4_PRESSED:
+            bin_number = None
+            if event == InputEvents.BIN_1_PRESSED:
+                bin_number = 1
+            elif event == InputEvents.BIN_2_PRESSED:
+                bin_number = 2
+            elif event == InputEvents.BIN_3_PRESSED:
+                bin_number = 3
+            elif event == InputEvents.BIN_4_PRESSED:
+                bin_number = 4
+
+            if self._state.selected_bin.value == bin_number:
                 self._state.selected_bin.value = None
+                self._state.visible_date.value = None
             else:
-                self._state.selected_bin.value = 1
-        elif event == InputEvents.BIN_2_PRESSED:
-            if self._state.selected_bin.value == 2:
-                self._state.selected_bin.value = None
-            else:
-                self._state.selected_bin.value = 2
-        elif event == InputEvents.BIN_3_PRESSED:
-            if self._state.selected_bin.value == 3:
-                self._state.selected_bin.value = None
-            else:
-                self._state.selected_bin.value = 3
-        elif event == InputEvents.BIN_4_PRESSED:
-            if self._state.selected_bin.value == 4:
-                self._state.selected_bin.value = None
-            else:
-                self._state.selected_bin.value = 4
+                self._state.selected_bin.value = bin_number
 
 
     def _refresh_state(self):
         if self._state is not None:
             self._state.refresh()
+
+
+    def tick(self, drivers):
+        if self._state.sleeping.handle_change():
+            if self._state.sleeping.value:
+                drivers.sleep()
+            else:
+                drivers.wake()
+
+        should_reload_bin_data = False
+
+        if self._state.home.handle_change():
+            should_reload_bin_data = True
+
+        if self._state.bin_configuration.handle_change():
+            should_reload_bin_data = True
+
+        if should_reload_bin_data:
+            self._state.load_bin_data()

@@ -1,5 +1,13 @@
+from threading import Thread
+
 import RPi.GPIO as GPIO
 import time
+from enum import Enum
+
+class LightState(Enum):
+    OFF = 0
+    ON = 1
+    PHASE = 2
 
 class Lights:
     POSITION_ONE_LED_PIN = 18
@@ -7,64 +15,62 @@ class Lights:
     POSITION_THREE_LED_PIN = 24
     POSITION_FOUR_LED_PIN = 25
 
-    _sleeping = False
-
     def __init__(self):
         GPIO.setup(self.POSITION_FOUR_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_THREE_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_ONE_LED_PIN, GPIO.OUT)
         GPIO.setup(self.POSITION_TWO_LED_PIN, GPIO.OUT)
 
-        self.set_lights(False, False, False, False)
+        self._sleeping = False
+        self._current_display = None
+        self._pins_phasing = []
+        self._phasing_thread = None
 
-    def set_lights_by_pins(self, pins: list[int]):
-        """If pins includes POSITION_FOUR_LED_PIN, turn it on. Else, turn it off"""
-        if(self._sleeping):
+        self.all_off()
+
+    def set_light_to_state(self, pin: int, state: LightState):
+        if state == LightState.ON:
+            GPIO.output(pin, GPIO.HIGH)
+            # Remove from self._pins_phasing
+            self._pins_phasing = [x for x in self._pins_phasing if x != pin]
+        elif state == LightState.OFF:
+            GPIO.output(pin, GPIO.LOW)
+            # Remove from self._pins_phasing
+            self._pins_phasing = [x for x in self._pins_phasing if x != pin]
+        elif state == LightState.PHASE:
+            self._pins_phasing.append(pin)
+
+    def set_lights(self, one: LightState, two: LightState, three: LightState, four: LightState):
+        if self._sleeping:
             return
 
-        GPIO.output(self.POSITION_FOUR_LED_PIN, GPIO.HIGH if self.POSITION_FOUR_LED_PIN in pins else GPIO.LOW)
-        GPIO.output(self.POSITION_THREE_LED_PIN, GPIO.HIGH if self.POSITION_THREE_LED_PIN in pins else GPIO.LOW)
-        GPIO.output(self.POSITION_TWO_LED_PIN, GPIO.HIGH if self.POSITION_TWO_LED_PIN in pins else GPIO.LOW)
-        GPIO.output(self.POSITION_ONE_LED_PIN, GPIO.HIGH if self.POSITION_ONE_LED_PIN in pins else GPIO.LOW)
-
-    def set_lights(self, one, two, three, four):
-        if(self._sleeping):
+        if self.cached(one, two, three, four):
             return
 
-        if(one is not None):
-            GPIO.output(self.POSITION_ONE_LED_PIN, GPIO.HIGH if one else GPIO.LOW)
-        if(two is not None):
-            GPIO.output(self.POSITION_TWO_LED_PIN, GPIO.HIGH if two else GPIO.LOW)
-        if(three is not None):
-            GPIO.output(self.POSITION_THREE_LED_PIN, GPIO.HIGH if three else GPIO.LOW)
-        if(four is not None):
-            GPIO.output(self.POSITION_FOUR_LED_PIN, GPIO.HIGH if four else GPIO.LOW)
+        self.set_light_to_state(self.POSITION_ONE_LED_PIN, one)
+        self.set_light_to_state(self.POSITION_TWO_LED_PIN, two)
+        self.set_light_to_state(self.POSITION_THREE_LED_PIN, three)
+        self.set_light_to_state(self.POSITION_FOUR_LED_PIN, four)
 
-    def sample_lights(self):
-        print('sample')
-        self.set_lights(False, False, False, False)
-        time.sleep(0.2)
-        self.set_lights(True, False, False, False)
-        time.sleep(0.2)
-        self.set_lights(True, True, False, False)
-        time.sleep(0.2)
-        self.set_lights(True, True, True, False)
-        time.sleep(0.2)
-        self.set_lights(True, True, True, True)
-        time.sleep(0.2)
-        self.set_lights(False, True, True, True)
-        time.sleep(0.2)
-        self.set_lights(False, False, True, True)
-        time.sleep(0.2)
-        self.set_lights(False, False, False, True)
-        time.sleep(0.2)
-        self.set_lights(False, False, False, False)
+        if len(self._pins_phasing) > 0:
+            self._start_phasing()
+        else:
+            self._stop_phasing()
 
+    def cached(self, one, two, three, four):
+        cache = [one, two, three, four]
+
+        if(self._current_display is not None and self._current_display == cache):
+            return True
+
+        self._current_display = cache
+
+        return False
 
     def sleep(self):
         if self._sleeping:
             return
-        self.set_lights(False, False, False, False)
+        self.all_off()
         self._sleeping = True
 
     def wake(self):
@@ -73,4 +79,50 @@ class Lights:
         self._sleeping = False
 
     def cleanup(self):
-        self.set_lights(False, False, False, False)
+        self.all_off()
+
+    def all_off(self):
+        self.set_lights(LightState.OFF, LightState.OFF, LightState.OFF, LightState.OFF)
+
+    def _start_phasing(self):
+        self._phasing_thread = Thread(target=self._phase)
+        self._phasing_thread.start()
+
+    def _phase(self):
+        # Set up the PWM for the pins
+        pwms = []
+        for pin in self._pins_phasing:
+            pwms.append(GPIO.PWM(pin, 100))
+
+        # Start them all
+        for pwm in pwms:
+            pwm.start(0)
+
+        pause_time = 0.02
+
+        while True:
+            for i in range(0, 101):
+                for pwm in pwms:
+                    pwm.ChangeDutyCycle(i)
+                if len(self._pins_phasing) == 0:
+                    break
+                time.sleep(pause_time)
+            for i in range(100, -1, -1):
+                for pwm in pwms:
+                    pwm.ChangeDutyCycle(i)
+                if len(self._pins_phasing) == 0:
+                    break
+                time.sleep(pause_time)
+
+            if len(self._pins_phasing) == 0:
+                break
+
+        for pwm in pwms:
+            pwm.stop()
+
+
+    def _stop_phasing(self):
+        if self._phasing_thread is not None:
+            self._pins_phasing = []
+            self._phasing_thread.join()
+            self._phasing_thread = None

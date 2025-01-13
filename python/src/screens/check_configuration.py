@@ -44,7 +44,8 @@ class ConfigurationChecker:
         return ConfigurationCheckerResult(
             self._missing_active_home(),
             self._no_bins_set_up(),
-            self._not_connected_to_internet()
+            False
+            # self._not_connected_to_internet()
         )
 
     def _missing_active_home(self):

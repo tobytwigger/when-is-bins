@@ -1,5 +1,7 @@
+from threading import Thread
 from RPLCD.gpio import CharLCD
 import RPi.GPIO as GPIO
+import time
 
 class Lcd:
     LCD_E_PIN = 3
@@ -26,6 +28,8 @@ class Lcd:
         self._current_line_1 = None
         self._current_line_2 = None
         self._sleeping = False
+        self._scrolling_thread = None
+        self._quit_scrolling_thread = False
 
     def _lcd_init_pins(self):
         GPIO.setup(self.LCD_E_PIN, GPIO.OUT)
@@ -52,21 +56,74 @@ class Lcd:
             line1 = line1.rjust(self.LCD_WIDTH, ' ')
             line2 = line2.rjust(self.LCD_WIDTH, ' ')
 
-        if prefix:
-            line1 = prefix + line1[len(prefix):]
-        if suffix:
-            line1 = line1[:self.LCD_WIDTH - len(suffix)] + suffix
-
         if self._current_line_1 == line1 and self._current_line_2 == line2:
             return
+
+        if self._scrolling_thread is not None:
+            self._quit_scrolling_thread = True
+            self._scrolling_thread.join()
 
         self._current_line_1 = line1
         self._current_line_2 = line2
         self._lcd.clear()
         self._lcd.cursor_mode = 'hide'
-        self._lcd.write_string(line1)
+        if len(line1) > self.LCD_WIDTH or len(line2) > self.LCD_WIDTH:
+            self._scrolling_thread = Thread(target=self._display_scrolling, args=(line1, line2, prefix, suffix))
+            self._scrolling_thread.start()
+        else:
+            if prefix:
+                line1 = prefix + line1[len(prefix):]
+            if suffix:
+                line1 = line1[:self.LCD_WIDTH - len(suffix)] + suffix
+
+            self._lcd.write_string(line1)
+            self._lcd.cursor_pos = (1, 0)
+            self._lcd.write_string(line2)
+
+    def _display_scrolling(self, line1, line2, prefix, suffix):
+        if len(line1) > self.LCD_WIDTH:
+            line1 = line1 + '          '
+        if len(line2) > self.LCD_WIDTH:
+            line2 = line2 + '          '
+        line1, line2 = self._scroll_text(line1, line2, prefix, suffix)
+        self._quit_scrolling_thread = False
+
+        while True:
+            # Loop 10 times
+            for _ in range(10):
+                if self._quit_scrolling_thread:
+                    self._quit_scrolling_thread = False
+                    return
+                time.sleep(0.05)
+            line1, line2 = self._scroll_text(line1, line2, prefix, suffix)
+
+    def _scroll_text(self, line1, line2, prefix, suffix):
+        """
+        If line1 or line2 is longer than the LCD_WIDTH, scroll the text by one character
+        :param line1:
+        :param line2:
+        :return: (line1, line2)
+        """
+        self._lcd.clear()
+        self._lcd.cursor_mode = 'hide'
+        real_line_1 = line1[:self.LCD_WIDTH]
+        real_line_2 = line2[:self.LCD_WIDTH]
+
+        if prefix is not None:
+            real_line_1 = prefix + real_line_1[len(prefix):]
+        if suffix is not None:
+            real_line_1 = real_line_1[:self.LCD_WIDTH - len(suffix)] + suffix
+
+        self._lcd.write_string(real_line_1)
         self._lcd.cursor_pos = (1, 0)
-        self._lcd.write_string(line2)
+        self._lcd.write_string(real_line_2)
+
+        if len(line1) > self.LCD_WIDTH:
+            line1 = line1[1:] + line1[0]
+        if len(line2) > self.LCD_WIDTH:
+            line2 = line2[1:] + line2[0]
+
+        return line1, line2
 
     def sleep(self):
         if self._sleeping:
@@ -75,6 +132,11 @@ class Lcd:
         self._lcd.cursor_mode = 'hide'
         self._current_line_1 = None
         self._current_line_2 = None
+
+        if self._scrolling_thread is not None:
+            self._quit_scrolling_thread = True
+            self._scrolling_thread.join()
+
         GPIO.output(self.LCD_BACKLIGHT_TOGGLE_PIN, GPIO.LOW)
         self._sleeping = True
 
@@ -86,5 +148,8 @@ class Lcd:
         self._lcd.cursor_mode = 'hide'
 
     def cleanup(self):
+        if self._scrolling_thread is not None:
+            self._quit_scrolling_thread = True
+            self._scrolling_thread.join()
         self._lcd.clear()
         self._lcd.cursor_mode = 'hide'

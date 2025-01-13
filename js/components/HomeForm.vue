@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {Council, type CouncilProperties} from "~/composables/useCouncils";
-import {type InferType, object, string, number} from "yup";
+import {type InferType, object, string, number, boolean} from "yup";
 
 const props = defineProps<{
     modelValue: HomeFormSchema
@@ -9,7 +9,6 @@ const props = defineProps<{
 const {councils, councilSelectSchema, councilKeys} = useCouncils();
 
 const selectedCouncil = computed<Council | null>(() => {
-    console.log(councils, state);
     return councils.find(council => council.key === props.modelValue?.council) || null
 })
 
@@ -17,7 +16,8 @@ const schema = object({
     name: string().required('Required'),
     council: string().nullable().oneOf(councilKeys.value, 'Invalid council'),
     councilData: object().json(),
-    timeout: number().min(1).max(21600)
+    timeout: number().min(1).max(21600),
+    putOutDayBefore: boolean(),
 })
 
 export type HomeFormSchema = InferType<typeof schema>
@@ -90,9 +90,13 @@ const state = computed<HomeFormSchema>({
                     These are settings for your bin-dicator. You can change them later.
                 </template>
 
-                <div>
+                <div class="space-y-8">
                     <UFormGroup label="Timeout" hint="The number of seconds before the screen turns off">
                         <UInput type="number" v-model="state.timeout" />
+                    </UFormGroup>
+
+                    <UFormGroup label="Put out day before" hint="Do you put your bins out the day before?">
+                        <UToggle v-model="state.putOutDayBefore" size="lg"/>
                     </UFormGroup>
                 </div>
 

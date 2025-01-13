@@ -43,6 +43,7 @@ const loadHome = () => {
             state.value.council = response.home?.council || null
             state.value.councilData = response.home?.council_data || {}
             state.value.timeout = response.home?.timeout || 60
+            state.value.putOutDayBefore = response.home?.put_out_day_before || false
         })
         .catch((error) => {
             console.error(error)
@@ -58,7 +59,8 @@ const state = ref({
     name: undefined,
     council: undefined,
     councilData: {},
-    timeout: 60
+    timeout: 60,
+    putOutDayBefore: false,
 })
 
 const isSubmitting = ref<boolean>(false);

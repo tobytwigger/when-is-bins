@@ -20,4 +20,4 @@ class NoBins(ScreenUsingState):
         drivers.lcd.display('No bins set up', '', drivers.lcd.TEXT_STYLE_CENTER)
 
     def tick(self, drivers):
-        drivers.lights.set_lights(False, False, False, False)
+        drivers.lights.all_off()

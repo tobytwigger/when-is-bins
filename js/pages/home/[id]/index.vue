@@ -61,6 +61,10 @@
                 <span class="font-bold">Timeout</span>
                 <span>{{home.timeout ?? 'N/A' }}s</span>
             </div>
+            <div class="flex flex-row space-x-4 ml-8">
+                <span class="font-bold">When do you take your bins out?</span>
+                <span>{{home.put_out_day_before ? 'The day before' : 'The day of' }}</span>
+            </div>
         </div>
 
     </LayoutsHome>

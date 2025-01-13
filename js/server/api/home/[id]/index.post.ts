@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
             name: body.name,
             council: body.council,
             council_data: body.councilData,
-            timeout: body.timeout
+            timeout: body.timeout,
+            put_out_day_before: body.putOutDayBefore
         }).where(eq(tables.homes.id, id)).returning().get()
     } else {
 
@@ -20,7 +21,8 @@ export default defineEventHandler(async (event) => {
             council: body.council,
             council_data: body.councilData,
             active: !alreadyAnActiveHome?.id,
-            timeout: body.timeout
+            timeout: body.timeout,
+            put_out_day_before: body.putOutDayBefore
         }).returning().get()
     }
 
