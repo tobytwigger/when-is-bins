@@ -14,15 +14,16 @@ class Config:
 
 class ConfigRepository:
     def __init__(self):
-        self.config = None
+        self.config = Config.default()
         self.load()
 
     def load(self):
         try:
             home = Home.get_active()
+            default_config = Config.default()
 
-            return Config(
-                timeout=home.timeout if home else 60
+            self.config = Config(
+                timeout=home.timeout if home else default_config.timeout
             )
         except Exception as e:
             self.config = Config.default()

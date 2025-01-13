@@ -18,12 +18,11 @@ class InputEvents(Enum):
     BIN_4_PRESSED = 8
 
 class Inputs:
-    _movement_detected_at = None
-
     def __init__(self, drivers: Drivers, timeout):
         self._drivers = drivers
         self._throttle = {}
         self._movement_timeout = timeout
+        self._movement_detected_at = time.time()
 
     def listen(self):
         events = []
@@ -33,7 +32,7 @@ class Inputs:
                 events.append(InputEvents.MOVEMENT_DETECTED)
             self._movement_detected_at = time.time()
 
-        if self._movement_detected_at and time.time() - self._movement_detected_at > self.movement_timeout:
+        if self._movement_detected_at and time.time() - self._movement_detected_at > self._movement_timeout:
             events.append(InputEvents.MOVEMENT_STOPPED)
             self._movement_detected_at = None
 

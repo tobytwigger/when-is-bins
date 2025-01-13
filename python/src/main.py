@@ -11,7 +11,7 @@ import threading
 from drivers.buttons import Buttons
 from drivers.drivers import Drivers
 from drivers.inputs import Inputs
-from python.src.config.config import ConfigRepository
+from config.config import ConfigRepository
 from screens.check_configuration import ConfigurationChecker, CheckConfiguration
 from screens.goodbye import GoodbyeScreen
 from screens.error import ErrorScreen
@@ -107,6 +107,7 @@ class AppRunner:
 
         # Add a regular job to check configuration
         self._schedule.every(10).seconds.do(self._check_configuration)
+        self._schedule.every(15).seconds.do(self._check_settings)
 
         # Let the screen define its schedule
         screen.schedule(self._schedule)
@@ -164,6 +165,9 @@ class AppRunner:
         result = checker.validate()
         if not result.is_valid():
             self._redirect_to_config = True
+
+    def _check_settings(self):
+        self._inputs._movement_timeout = ConfigRepository().get().timeout
 
     def _cleanup(self, screen):
         if self._stop_schedule is not None:

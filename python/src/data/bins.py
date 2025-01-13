@@ -45,23 +45,23 @@ class BinDayInformationCollection:
 
     def next_date_after(self, after_date):
         if after_date is None:
-            return self.first_date()
+            return None
 
         for b in self.bin_days:
             if b.date > after_date:
                 return b.date
 
-        return self.first_date()
+        return None
 
     def date_before(self, before_date):
         if before_date is None:
-            return self.first_date()
+            return None
 
         for b in self.bin_days:
             if b.date < before_date:
                 return b.date
 
-        return self.last_date()
+        return None
 
     def get_dates_for_bin(self, bin_id: int) -> list[datetime.date]:
         dates = []

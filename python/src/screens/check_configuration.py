@@ -1,11 +1,9 @@
 from screens.abstract_screen import Screen
 from schedule import Scheduler, CancelJob
 from database.db import Home
-from screens.next_bin_day import NextBinDay
-from dataclasses import dataclass
+from screens.loading_bin_day import LoadingBinDay
 import http.client as httplib
 from drivers.drivers import Drivers
-from data.bins import BinDayRepository
 
 
 class CheckConfiguration(Screen):
@@ -37,7 +35,7 @@ class CheckConfiguration(Screen):
 
     def redirect(self):
         if self._configuration_result is not None and self._configuration_result.is_valid():
-            return NextBinDay()
+            return LoadingBinDay()
 
         return None
 

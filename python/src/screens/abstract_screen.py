@@ -5,7 +5,6 @@ from drivers.inputs import InputEvents
 
 
 class Screen(ABC):
-    @abstractmethod
     def schedule(self, schedule: Scheduler):
         pass
 
@@ -18,7 +17,7 @@ class Screen(ABC):
     def redirect(self):
         return None
 
-    def show_initial_state(self):
+    def show_initial_state(self, drivers):
         pass
 
     def should_quit(self):
